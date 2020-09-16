@@ -19,13 +19,25 @@ ALTER TABLE Caller ADD CONSTRAINT PK_Caller_id PRIMARY KEY(Caller_id);
 ALTER TABLE Customer ADD CONSTRAINT PK_Company_ref PRIMARY KEY(Company_ref);
 
 /*LLAVES UNICAS */
+ALTER TABLE Shift_type ADD CONSTRAINT UK_Start_time UNIQUE(Start_time);
+ALTER TABLE Shift_type ADD CONSTRAINT UK_End_time UNIQUE(End_time);                                                                                 
 ALTER TABLE Customer ADD CONSTRAINT UK_Company_name UNIQUE(Company_name);
-ALTER TABLE Customer ADD CONSTRAINT UK_Contact_id UNIQUE(Contact_id);      /*ESTA ES FORANEA, ESTA MAL*/   
+ALTER TABLE Customer ADD CONSTRAINT UK_Contact_id UNIQUE(Contact_id);     
 ALTER TABLE Customer ADD CONSTRAINT UK_Address_1 UNIQUE(Address_1); 
 ALTER TABLE Customer ADD CONSTRAINT UK_Postcode UNIQUE(Postcode);
 ALTER TABLE Customer ADD CONSTRAINT UK_Telephone UNIQUE(Telephone);
 ALTER TABLE Issue ADD CONSTRAINT UK_Detail UNIQUE(Detail);
 
+/*LLAVES FORANEAS*/
+																																								
+/*TABLA Shift*/
+ALTER TABLE Shift ADD CONSTRAINT FK_Manager FOREIGN KEY(Manager) REFERENCES Staff(Staff_code);
+ALTER TABLE Shift ADD CONSTRAINT FK_Operator FOREIGN KEY(Operator) REFERENCES Staff(Staff_code);
+ALTER TABLE Shift ADD CONSTRAINT FK_Engineer1 FOREIGN KEY(Engineer1) REFERENCES Staff(Staff_code);
+ALTER TABLE Shift ADD CONSTRAINT FK_Engineer2 FOREIGN KEY(Engineer2) REFERENCES Staff(Staff_code);                                                                                      
+
+/*TABLA Staff*/
+ALTER TABLE Staff ADD CONSTRAINT FK_Level_code FOREIGN KEY(Level_code) REFERENCES Levels(Level_code);																																								
 
 /*CONSULTAS*/
 /*EASY QUESTIONS */
