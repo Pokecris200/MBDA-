@@ -1,10 +1,13 @@
 CREATE TABLE Shift(Shift_date DATE, Shift_type VARCHAR(5),Manager VARCHAR(3), Operator VARCHAR(3), Engineer1 VARCHAR(3), Engineer2 VARCHAR(3));
-CREATE TABLE Shift_type(Shift_type VARCHAR(5), Start_time TIME,End_time TIME);
+CREATE TABLE Shift_type(Shift_type VARCHAR(5), Start_time DATE,End_time DATE);
 CREATE TABLE Staff(Staff_code VARCHAR(3), First_name VARCHAR(10),Last_name VARCHAR(10), Level_code NUMBER(1)NOT NULL);
-CREATE TABLE Level(Level_code NUMBER(1) NOT NULL , Manager VARCHAR(1),Operator VARCHAR(1), Engineer VARCHAR(1));
-CREATE TABLE Issue(Call_date DATE, Call_ref NUMBER(4) NOT NULL,Caller_id NUMBER(5) NOT NULL, Detail VARCHAR(250), Taken_by VARCHAR(3), Assigned_to VARCHAR(3), Status VARCHAR(5));
+CREATE TABLE Levels(Level_code NUMBER(1) NOT NULL , Manager VARCHAR(1),Operator VARCHAR(1), Engineer VARCHAR(1));
+CREATE TABLE Issue(Call_date DATE, Call_ref NUMBER(4) NOT NULL,Caller_id NUMBER(5) NOT NULL, Detail VARCHAR(250),
+Taken_by VARCHAR(3), Assigned_to VARCHAR(3), Status VARCHAR(5));
 CREATE TABLE Caller(Caller_id NUMBER(5) NOT NULL, Company_ref NUMBER(5) NOT NULL, First_name VARCHAR(10), Last_name VARCHAR(10));
-CREATE TABLE Customer(Company_ref NUMBER(5) NOT NULL, Company_name VARCHAR(50),Contact_id NUMBER(5) NOT NULL, Address_1 VARCHAR(50), Address_2 VARCHAR(50), Town VARCHAR(20), Postcode VARCHAR(20), Telephone NUMBER(11));
+CREATE TABLE Customer(Company_ref NUMBER(5) NOT NULL, Company_name VARCHAR(50),Contact_id NUMBER(5) NOT NULL, Address_1 VARCHAR(50),
+Address_2 VARCHAR(50), Town VARCHAR(20), Postcode VARCHAR(20), Telephone NUMBER(11));
+
 
 /*ALTERACION PARA PONER LAS PRIMARY KEYS EN LAS TABLAS*/
 ALTER TABLE Shift ADD CONSTRAINT PK_Shift_date PRIMARY KEY(Shift_date);
