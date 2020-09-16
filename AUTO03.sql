@@ -37,8 +37,19 @@ ALTER TABLE Shift ADD CONSTRAINT FK_Engineer1 FOREIGN KEY(Engineer1) REFERENCES 
 ALTER TABLE Shift ADD CONSTRAINT FK_Engineer2 FOREIGN KEY(Engineer2) REFERENCES Staff(Staff_code);                                                                                      
 
 /*TABLA Staff*/
-ALTER TABLE Staff ADD CONSTRAINT FK_Level_code FOREIGN KEY(Level_code) REFERENCES Levels(Level_code);																																								
-
+ALTER TABLE Staff ADD CONSTRAINT FK_Level_code FOREIGN KEY(Level_code) REFERENCES Levels(Level_code);		
+										
+/*TABLA Issue*/
+ALTER TABLE Issue ADD CONSTRAINT FK_Caller_id FOREIGN KEY(Caller_id) REFERENCES Caller(Caller_id);
+ALTER TABLE Issue ADD CONSTRAINT FK_Taken_by FOREIGN KEY(Taken_by) REFERENCES Staff(Staff_code);
+ALTER TABLE Issue ADD CONSTRAINT FK_Assigned_to FOREIGN KEY(Assigned_to) REFERENCES Staff(Staff_code);
+										
+/*TABLA Caller*/
+ALTER TABLE Caller ADD CONSTRAINT FK_Company_ref FOREIGN KEY(Company_ref) REFERENCES Customer(Company_ref);
+										
+/*TABLA Customer*/
+ALTER TABLE Customer ADD CONSTRAINT FK_Contact_id FOREIGN KEY(Contact_id) REFERENCES Caller(Caller_id);										
+										
 /*CONSULTAS*/
 /*EASY QUESTIONS */
 SELECT Level_code, COUNT(Level_code)AS Total_Employee
