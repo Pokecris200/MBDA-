@@ -48,8 +48,98 @@ ALTER TABLE Issue ADD CONSTRAINT FK_Assigned_to FOREIGN KEY(Assigned_to) REFEREN
 ALTER TABLE Caller ADD CONSTRAINT FK_Company_ref FOREIGN KEY(Company_ref) REFERENCES Customer(Company_ref);
 										
 /*TABLA Customer*/
-ALTER TABLE Customer ADD CONSTRAINT FK_Contact_id FOREIGN KEY(Contact_id) REFERENCES Caller(Caller_id);										
+ALTER TABLE Customer ADD CONSTRAINT FK_Contact_id FOREIGN KEY(Contact_id) REFERENCES Caller(Caller_id);	
 										
+										
+/*Automatizacion INSERT Shift*/										
+SELECT 
+CONCAT(
+'INSERT INTO Shift VALUES(',Shift_date,',', Shift_type,',',Manager,',',Operator,',',Engineer1,',',Engineer2,');'
+) 
+FROM Shift
+/*INSERT Shift*/									
+INSERT INTO Shift VALUES(TO_DATE('2017/08/12','YYYY/MM/DD'), 'Early','LB1', 'AW1', 'AE1', 'JE1');
+INSERT INTO Shift VALUES(TO_DATE('2017/08/12','YYYY/MM/DD'), 'Late','AE1', 'IM1', 'AL1', 'BJ1');
+INSERT INTO Shift VALUES(TO_DATE('2017/08/13','YYYY/MM/DD'), 'Early','AE1', 'MM1', 'MW1',null);
+INSERT INTO Shift VALUES(TO_DATE('2017/08/13','YYYY/MM/DD'), 'Late','AE1', 'AE1', 'EB1', null);
+INSERT INTO Shift VALUES(TO_DATE('2017/08/14','YYYY/MM/DD'), 'Late','LB1', 'AB1', 'DJ1', 'JP1');	
+										
+/*Automatizacion INSERT Shift_type*/										
+SELECT 
+CONCAT(
+'INSERT INTO Shift_type VALUES(',Shift_type,',', Start_time,',',End_time,');'
+) 
+FROM Shift_type
+/*INSERT Shift_type*/										
+INSERT INTO Shift_type VALUES('Early','08:00', '14:00');
+INSERT INTO Shift_type VALUES('Late','14:00', '20:00');										
+										
+/*Automatizacion INSERT Staff*/										
+SELECT 
+CONCAT(
+'INSERT INTO Staff VALUES(',Staff_code,',', First_name,',',Last_name,',',Level_code,');'
+) 
+FROM Staff
+/*INSERT Staff*/			 
+INSERT INTO Staff VALUES('AB1','Anthony', 'Butler',1);
+INSERT INTO Staff VALUES('AB2','Alexis', 'Butler',3);
+INSERT INTO Staff VALUES('AE1','Ava', 'Ellis',7);
+INSERT INTO Staff VALUES('AL1','Alexander', 'Lawson',3);
+INSERT INTO Staff VALUES('AW1','Alyssa', 'White',1);		
+			 
+/*Automatizacion INSERT Levels*/			 
+SELECT 
+CONCAT(
+'INSERT INTO Levels VALUES(',Level_code,',',Manager,',',Operator,',',Engineer,');'
+) 
+/*Insert Level*/			 
+FROM Levels
+INSERT INTO Levels VALUES(1,null, 'Y',null);
+INSERT INTO Levels VALUES(2,null, null,'Y');
+INSERT INTO Levels VALUES(3,null, 'Y','Y');
+INSERT INTO Levels VALUES(4,'Y', null,null);
+INSERT INTO Levels VALUES(5,'Y', 'Y',null);
+INSERT INTO Levels VALUES(7,'Y', 'Y','Y');			 
+			 
+/*Automatizacion INSERT Issue*/										
+SELECT 
+CONCAT(
+'INSERT INTO Issue VALUES(',Call_date,',',Call_ref,',',Caller_id,',',Detail,',',Taken_by,',',Assigned_to,',',Status,');'
+) 
+FROM Issue
+/*INSERT Issue*/									
+INSERT INTO Issue VALUES(TO_DATE('2017/08/12 08:16:00 ','YYYY/MM/DD/HH24/MI/SS'), 1237,9, 'How can I guarantee a digital communication in Oracle ?', 'AW1', 'AE1', 'Closed');
+INSERT INTO Issue VALUES(TO_DATE('2017/08/12 08:24:00','YYYY/MM/DD/HH24/MI/SS'), 1238,10, 'How can I vanish a task-based documentation in Adobe Acrobat ?', 'AW1', 'JE1', 'Closed');
+INSERT INTO Issue VALUES(TO_DATE('2017/08/12 08:29:00','YYYY/MM/DD/HH24/MI/SS'), 1239,12, 'How can I request a usability in Microsoft Powerpoint ?', 'AW1', 'AE1', 'Closed');
+INSERT INTO Issue VALUES(TO_DATE('2017/08/12 08:43:00','YYYY/MM/DD/HH24/MI/SS'), 1240,13, 'How can I skip a aspect ratio in Oracle ?', 'AW1', 'JE1', 'Closed');
+INSERT INTO Issue VALUES(TO_DATE('2017/08/12 08:48:00','YYYY/MM/DD/HH24/MI/SS'), 1241,14, 'Im trying to train a locator in SQL Server but the Information Mapping is too wacky', 'AW1', 'AE1', 'Closed');
+
+/*Automatizacion INSERT Caller*/										
+SELECT 
+CONCAT(
+'INSERT INTO Caller VALUES(',Caller_id,',', Company_ref,',',First_name,',',Last_name,');'
+) 
+FROM Caller
+/*INSERT Caller*/			 
+INSERT INTO Caller VALUES(1,111, 'Ava','Clarke');
+INSERT INTO Caller VALUES(2,134, 'Ava',,'Edwards');
+INSERT INTO Caller VALUES(3,129, 'John','Green');
+INSERT INTO Caller VALUES(4,108, 'Ryan','White');
+INSERT INTO Caller VALUES(5,114, 'Noah','Evans');
+										
+/*Automatizacion INSERT Customer*/										
+SELECT 
+CONCAT(
+'INSERT INTO Customer VALUES(',Company_ref,',', Company_name,',',Contact_id,',',Address_1,',',Address_2,',',Town,',',Postcode,',', Telephone,');'
+) 
+FROM Customer
+/*INSERT Customer*/			 
+INSERT INTO Customer VALUES(100,'Haunt Services',112,'53 Finger Gate',null,'Dartford','DA48 5WU',01001722832);
+INSERT INTO Customer VALUES(101,'Genus Ltd.',33,,'	34 Pyorrhea Green',null,'Guildford','GY34 4ZH',01004256920);
+INSERT INTO Customer VALUES(102,'Corps Ltd.',111,'67 Napery Green',null,'Harrow','HA32 6PP',01012384042);
+INSERT INTO Customer VALUES(103,'Train Services',115,'30 Crizzel Parkway',null,'Hemel Hempstead','HP38 6DU',01012979358);
+INSERT INTO Customer VALUES(104,'Somebody Logistics',127,'93 Calculated Oval',null,'Hull','	HX16 1IF',01013707879);											
+			 		 
 /*CONSULTAS*/
 /*EASY QUESTIONS */
 SELECT Level_code, COUNT(Level_code)AS Total_Employee
@@ -134,8 +224,18 @@ WHERE EXTRACT(HOUR FROM a.hour) <= 13 AND Shift_type = 'Early'
 OR EXTRACT(HOUR FROM a.hour) > 13 AND Shift_type = 'Late'
 GROUP BY Manager,a.hour
 ORDER BY a.hour;
-
-/*Para despoblar las tablas*/
+										
+/*Consultas NoOK*/	
+INSERT INTO Shift VALUES(null, 'Early','AE1', 'MM1', 'MW1',null);									
+INSERT INTO Shift_type VALUES(null,'14:00', 3);	
+INSERT INTO Staff VALUES(4,'Alexis', 'Butler',null);										
+INSERT INTO Levels VALUES(null,'Y', 20,5);										
+INSERT INTO Issue VALUES(null, null,null, 257, 'AW1', 'AE1', 'Closed');										
+INSERT INTO Caller VALUES(null,129, 'John','Green');
+INSERT INTO Customer VALUES(null,'Corps Ltd.',null,'67 Napery Green',null,'Harrow','HA32 6PP',01012384042);										
+										
+										
+/*Despoblar tablas*/
 DELETE FROM Shift;
 DELETE FROM Shift_type;
 DELETE FROM Staff;
@@ -143,9 +243,8 @@ DELETE FROM Levels
 DELETE FROM Issue;
 DELETE FROM Caller; 
 DELETE FROM Customer;
-
-/*Para eliminar las tablas en sql developer se usa CASCADE CONSTRAINTS*/
-/*para eliminar las llaves foraneas dadas por el usuarioo y ahi si eliminar del todo la tabla*/
+	
+/*Eliminacion de tablas*/
 DROP TABLE Shift CASCADE CONSTRAINTS;
 DROP TABLE Shift_type CASCADE CONSTRAINTS;
 DROP TABLE Staff CASCADE CONSTRAINTS;
