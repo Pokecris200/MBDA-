@@ -1,9 +1,8 @@
+/*Creacion de tablas*/
 CREATE TABLE adulto (
     codigo      NUMBER(7) NOT NULL,
     cedula      NUMBER(12) NOT NULL,
-    correo      VARCHAR(40) NOT NULL,
-    telefono1   NUMBER(12) NOT NULL,
-    telefono2   NUMBER(12)
+    correo      VARCHAR(40) NOT NULL
 );
 
 CREATE TABLE telefono (
@@ -103,3 +102,34 @@ CREATE TABLE asignacion (
     aceptado        NUMBER(1),
     numerofamilia   NUMBER(5) NOT NULL
 );
+/*Poblar NoOK donde no se acepta los INSERT*/
+INSERT INTO adulto VALUES (
+    25698,
+    79186597,
+    NULL
+);/*El correo no puede ser nulo*/
+
+INSERT INTO telefono VALUES (
+    'Santiago',
+    3228369854
+);/*La cedula es un string, cuando debe ser un numero que no supere los 12 digitos*/
+
+INSERT INTO persona VALUES (
+    315,
+    'Santiago',
+    'M',
+    NULL,
+    TO_DATE('2020/09/24', 'yyyy/mm/dd')
+);/*El atributo talla debe ser un numero, no puede ser nulo*/
+
+INSERT INTO vestuario VALUES (
+    NULL,
+    32,
+    678
+);/*La cantidad de vestuario no puede ser nula*/
+
+INSERT INTO familia VALUES (
+    315,
+    NULL,
+    'Familia Gomez'
+);/*El atributo codigo debe ser un numero que o supere los 7 digitos, no puede ser nulo*/
