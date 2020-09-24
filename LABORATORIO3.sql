@@ -102,6 +102,8 @@ CREATE TABLE asignacion (
     aceptado        NUMBER(1),
     numerofamilia   NUMBER(5) NOT NULL
 );
+
+
 /*Poblar NoOK donde no se acepta los INSERT*/
 INSERT INTO adulto VALUES (
     25698,
@@ -133,3 +135,36 @@ INSERT INTO familia VALUES (
     NULL,
     'Familia Gomez'
 );/*El atributo codigo debe ser un numero que o supere los 7 digitos, no puede ser nulo*/
+
+
+/*Poblar NoOK donde aceptan los insert pero no deberia*/
+INSERT INTO adulto VALUES (
+    315,
+    123,
+    'diego.Forero@mail.com'
+); /*No es posible que la cedula tenga tan pocos digitos*/
+
+INSERT INTO persona VALUES (
+    315,
+    'Diego',
+    'M',
+    32,
+    TO_DATE('2010/09/24', 'yyyy/mm/dd')
+);/*Aun no ha cumplido la mayoria de edad, no deberia de estar en esta tabla*/
+
+INSERT INTO vestuario VALUES (
+    2,
+    'A',
+    375
+);/*'A' no es una talla de ropa valida*/
+
+INSERT INTO localidad VALUES (
+    'Chapinero',
+    9,
+    'Meta'
+);/*9 se pasa del nivel de prioridad de la localidad, el cual va de 1 a 5*/
+
+    INSERT INTO telefono VALUES (
+        315,
+        3287984597
+    )/*no es posible que una cedula valida tenga tan pocos digitos*/
