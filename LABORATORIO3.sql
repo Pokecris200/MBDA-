@@ -1,5 +1,5 @@
 /*Creacion de tablas*/
-CREATE TABLE adulto (
+CREATE TABLE adultos (
     codigo      NUMBER(7) NOT NULL,
     cedula      NUMBER(12) NOT NULL,
     correo      VARCHAR(40) NOT NULL
@@ -51,8 +51,8 @@ CREATE TABLE localidad (
 );
 
 CREATE TABLE reemplazo (
-    codigo    VARCHAR(5) NOT NULL,
-    codigo1   VARCHAR(5) NOT NULL
+    bien    VARCHAR(5) NOT NULL,
+    bien_reemplazo   VARCHAR(5) NOT NULL
 );
 
 CREATE TABLE alojamiento (
@@ -102,6 +102,148 @@ CREATE TABLE asignacion (
     aceptado        NUMBER(1),
     numerofamilia   NUMBER(5) NOT NULL
 );
+
+/*Pobla ok*/
+/*Poblar personas*/
+INSERT INTO persona VALUES (
+    6541258,
+    'Jose maria Gimenez',
+    'M',
+    'tll',
+    TO_DATE('1990/08/20', 'yyyy/mm/dd')
+);
+
+INSERT INTO persona VALUES (
+    1134502,
+    'Alejandra Rodriguez',
+    'F',
+    'tll',
+    TO_DATE('1970/10/01', 'yyyy/mm/dd')
+);
+INSERT INTO persona VALUES (
+    8541535,
+    'Maria Fernanda Forero',
+    'F',
+    'tll',
+    TO_DATE('1975/02/25', 'yyyy/mm/dd')
+);
+/*poblar opinion*/
+INSERT INTO opinion VALUES (
+    10000,
+    TO_DATE('2020/09/23', 'yyyy/mm/dd'),
+    'B',
+    'Ha sido ayuda',
+    6541258,
+    12345
+);
+
+INSERT INTO opinion VALUES (
+    10001,
+    TO_DATE('2020/09/25', 'yyyy/mm/dd'),
+    'M',
+    'Caotico',
+    1134502,
+    26456
+);
+
+INSERT INTO opinion VALUES (
+    10002,
+    TO_DATE('2020/09/28', 'yyyy/mm/dd'),
+    'E',
+    'Agradezco por todo',
+    8541535,
+    87264
+);
+
+/*poblar familia*/
+INSERT INTO familia VALUES (
+    22225,
+    6541258,
+    'Bosa'
+);
+
+INSERT INTO familia VALUES (
+    22226,
+    1134502,
+    'San Cristobal'
+);
+
+INSERT INTO familia VALUES (
+    22227,
+    8541535,
+    'Chapinero'
+);
+
+/*poblar localidad*/
+INSERT INTO localidad VALUES (
+    'Bosa',
+    5,
+    'Bogota'
+);
+
+INSERT INTO localidad VALUES (
+    'San Cristobal',
+    3,
+    'Bogota'
+);
+
+INSERT INTO localidad VALUES (
+    'Chapinero',
+    1,
+    'Bogota'
+);
+/*poblar bien*/
+INSERT INTO bien VALUES (
+    12345,
+    'Jean',
+    'V',
+    'S',
+    24684,
+    0,
+    11111
+);
+
+INSERT INTO bien VALUES (
+    12345,
+    'Leche',
+    'P',
+    'No',
+    31245,
+    8,
+    11112
+);
+
+INSERT INTO bien VALUES (
+    12345,
+    'Esferos',
+    'G',
+    'No',
+    79135,
+    5,
+    11113
+);
+/*poblar asignacion*/
+INSERT INTO asignacion VALUES (
+    200063214,
+    TO_DATE('2020/09/24', 'yyyy/mm/dd'),
+    1,
+    22225
+);
+
+INSERT INTO asignacion VALUES (
+    301068513,
+    TO_DATE('2020/10/05', 'yyyy/mm/dd'),
+    0,
+    22226
+);
+
+INSERT INTO asignacion VALUES (
+    410075754,
+    TO_DATE('2020/08/25', 'yyyy/mm/dd'),
+    NULL,
+    22227
+);
+
 
 
 /*Poblar NoOK donde no se acepta los INSERT*/
