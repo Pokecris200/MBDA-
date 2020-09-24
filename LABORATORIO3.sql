@@ -168,3 +168,35 @@ INSERT INTO telefono VALUES (
     315,
     3287984597
 );/*no es posible que una cedula valida tenga tan pocos digitos*/
+
+
+/*Eliminar datos de tablas*/
+DELETE FROM adulto;
+
+DELETE FROM telefono;
+
+DELETE FROM persona;
+
+DELETE FROM opinion;
+
+DELETE FROM opiniongrupal;
+
+DELETE FROM familia;
+
+DELETE FROM localidad;
+
+DELETE FROM reemplazo;
+
+DELETE FROM alojamiento;
+
+DELETE FROM vestuario;
+
+DELETE FROM generico;
+
+DELETE FROM perecedero;
+
+DELETE FROM detalle;
+
+DELETE FROM bien;
+
+DELETE FROM asignacion;
