@@ -169,6 +169,31 @@ INSERT INTO telefono VALUES (
     3287984597
 );/*no es posible que una cedula valida tenga tan pocos digitos*/
 
+/*Pobla ok*/
+INSERT INTO persona VALUES (6541258,'Jose maria Gimenez','M','tll','1990-08-20');
+INSERT INTO persona VALUES (1134502,'Alejandra Rodriguez','F','tll','1970-10-01');
+INSERT INTO persona VALUES (8541535,'Maria Fernanda Forero','F','tll','1975-02-25');
+
+INSERT INTO opinion VALUES (10000,'2020-09-23','B','Ha sido ayuda',6541258,12345);
+INSERT INTO opinion VALUES (10001,'2020-09-25','M','Caotico',1134502,26456);
+INSERT INTO opinion VALUES (10002,'2020-09-28','E','Agradezco por todo',8541535,87264);
+
+INSERT INTO familia VALUES (22225,6541258,'Bosa');
+INSERT INTO familia VALUES (22226,1134502,'San Cristobal');
+INSERT INTO familia VALUES (22227,8541535,'Chapinero');
+
+INSERT INTO localidades VALUES ('Bosa',5,'Bogota');
+INSERT INTO localidades VALUES ('San Cristobal',3,'Bogota');
+INSERT INTO localidades VALUES ('Chapinero',1,'Bogota');
+
+INSERT INTO bien VALUES (12345,'Jean','V','S',24684,0,11111);
+INSERT INTO bien VALUES (12345,'Leche','P','No',31245,8,11112);
+INSERT INTO bien VALUES (12345,'Esferos','G','No',79135,5,11113);
+
+INSERT INTO asignacion VALUES(200063214,'2020-09-24',1,22225);
+INSERT INTO asignacion VALUES(301068513,'2020-10-05',0,22226);
+INSERT INTO asignacion VALUES(410075754,'2020-08-25',NULL,22227);
+
 
 /*Eliminar datos de tablas*/
 DELETE FROM adulto;
