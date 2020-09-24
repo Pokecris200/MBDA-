@@ -133,3 +133,5 @@ INSERT INTO familia VALUES (
     NULL,
     'Familia Gomez'
 );/*El atributo codigo debe ser un numero que o supere los 7 digitos, no puede ser nulo*/
+
+/*Diego es gay*/
