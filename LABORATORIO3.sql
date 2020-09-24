@@ -50,7 +50,7 @@ CREATE TABLE localidad (
     departamento   VARCHAR(15) NOT NULL
 );
 
-CREATE TABLE remplazo (
+CREATE TABLE reemplazo (
     codigo    VARCHAR(5) NOT NULL,
     codigo1   VARCHAR(5) NOT NULL
 );
@@ -164,7 +164,7 @@ INSERT INTO localidad VALUES (
     'Meta'
 );/*9 se pasa del nivel de prioridad de la localidad, el cual va de 1 a 5*/
 
-    INSERT INTO telefono VALUES (
-        315,
-        3287984597
-    )/*no es posible que una cedula valida tenga tan pocos digitos*/
+INSERT INTO telefono VALUES (
+    315,
+    3287984597
+);/*no es posible que una cedula valida tenga tan pocos digitos*/
