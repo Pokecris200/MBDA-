@@ -385,7 +385,58 @@ ALTER TABLE bien
         'V',
         'A'
     ) );
+ALTER TABLE persona
+    ADD CONSTRAINT ck_cedula CHECK ( cedula BETWEEN 9999999999 AND 1000000000000 );
                                                
+
+/*Revision de proteccion*/
+/*Proteccion de cedula*/
+ALTER TABLE persona
+    ADD CONSTRAINT ck_cedula CHECK ( cedula BETWEEN 9999999999 AND 1000000000000 );    
+INSERT INTO adulto VALUES (
+    315,
+    123,
+    'diego.Forero@mail.com'
+); 
+/*Proteccion de edad*/
+ALTER TABLE persona
+    ADD CONSTRAINT ck_edad CHECK ( extract(year.nacimiento) < 2003 );
+INSERT INTO persona VALUES (
+    315,
+    'Diego',
+    'M',
+    32,
+    TO_DATE('2010/09/24', 'yyyy/mm/dd')
+);
+
+/*Proteccion de talla*/
+ALTER TABLE vestuario
+    ADD CONSTRAINT ck_talla_v CHECK ( talla IN (
+        'XS',
+        'S',
+        'M',
+        'L',
+        'XL'
+    ) );
+INSERT INTO vestuario VALUES (
+    2,
+    'A',
+    375
+);
+/*Proteccion nivel de localidad*/
+ALTER TABLE localidad
+    ADD CONSTRAINT ck_prioridad CHECK ( prioridad BETWEEN 0 AND 6 );
+INSERT INTO localidad VALUES (
+    'Chapinero',
+    9,
+    'Meta'
+);
+/*Proteccion de cedula*/
+ALTER TABLE persona
+    ADD CONSTRAINT ck_cedula CHECK ( cedula BETWEEN 9999999999 AND 1000000000000 );    
+ALTER TABLE persona
+    ADD CONSTRAINT ck_cedula CHECK ( cedula BETWEEN 9999999999 AND 1000000000000 );        
+
 
 /*PRIMARY KEYS*/
 ALTER TABLE adultos ADD CONSTRAINT pk_adultos_cedula PRIMARY KEY ( cedula );
@@ -507,7 +558,14 @@ FROM
 WHERE
     months_between(fecha, current_date) <= 1
 GROUP BY
-    bien.tipo;                                              
+    bien.tipo;        
+    
+/*Consulta las personas con edad mayor a 70 años*/
+SELECT
+    nombre
+FROM
+    persona
+WHERE EXTRACT (YEAR(nacimiento))< 1951;
 
 
 /*Eliminar datos de tablas*/
