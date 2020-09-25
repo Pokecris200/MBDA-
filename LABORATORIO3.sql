@@ -313,47 +313,21 @@ INSERT INTO telefono VALUES (
 
 
 /*Atributos*/
-ALTER TABLE bien check(bien.unitario < 100000 AND bien.unitario > -1);
-ALTER TABLE adulto check(adulto.correo LIKE '%@%');
-ALTER TABLE opiniongrupal check(opiniongrupal.estrellas < 6 AND opiniongrupal.estrellas > 0);
-ALTER TABLE persona check(persona.genero IN(
-    'M',
-    'F',
-    'O'
-));
-ALTER TABLE opinion check(opinion.opinion IN(
-    'E',
-    'B',
-    'R',
-    'M'
-));
-ALTER TABLE alojamiento CHECK (alojamiento.cantidad > 0);
-ALTER TABLE vestuario CHECK (vestuario.cantidad > 0);
-ALTER TABLE perecedero check(perecedero.cantidad > 0);
-ALTER TABLE generico check(generico.cantidad > 0);
-ALTER TABLE bien CHECK (bien.codigo LIKE ('%0' OR '%1')AND (SUBSTRING(bien.codigo,0,2) = UPPER(SUBSTRING(bien.codigo,0,2))) AND SUBSTRING(bien.codigo, 2, 2 ) SIMILAR to '[0-9]*' );
-ALTER TABLE localidad check(localidad.prioridad BETWEEN 0 AND 5);
-ALTER TABLE persona check(persona.talla IN(
-    'XS',
-    'S',
-    'M',
-    'L',
-    'XL'
-));
-ALTER TABLE vestuario check(vestuario.talla IN(
-    'XS',
-    'S',
-    'M',
-    'L',
-    'XL'
-));
-ALTER TABLE telefono CHECK (telefono.telefono BETWEEN 1000000 AND 999999999999);
-ALTER TABLE bien check(opinion.opinion IN(
-    'G',
-    'P',
-    'V',
-    'A'
-));
+ALTER TABLE bien ADD CONSTRAINT CK_Bien_Unitario CHECK CONSTRAIN (unitario < 100000 AND unitario > -1);
+ALTER TABLE adulto ADD CONSTRAINT CK_Correo CHECK (correo LIKE '%@%' AND correo LIKE '%.%');
+ALTER TABLE opiniongrupal ADD CONSTRAINT CK_Estrellas CHECK (estrellas < 6 AND opiniongrupal.estrellas > 0);
+ALTER TABLE persona ADD CONSTRAINT CK_Genero CHECK (genero IN ('M','F','O'));
+ALTER TABLE opinion ADD CONSTRAINT CK_Opinion CHECK (opinion IN ('E','B','R','M'));
+ALTER TABLE alojamiento ADD CONSTRAINT CK_Cantidad CHECK (cantidad > 0);
+ALTER TABLE vestuario ADD CONSTRAINT CK_Cantidad CHECK (cantidad > 0);
+ALTER TABLE perecedero ADD CONSTRAINT CK_Cantidad CHECK (cantidad > 0);
+ALTER TABLE generico ADD CONSTRAINT CK_Cantidad CHECK (cantidad > 0);
+ALTER TABLE bien ADD CONSTRAINT CK_Codigo CHECK ((codigo LIKE '%0' OR codigo LIKE '%1')AND (SUBSTRING(codigo,0,2) = UPPER(SUBSTRING(codigo,0,2))) AND SUBSTRING(codigo,2,2) SIMILAR TO '[0-9]*');
+ALTER TABLE localidad ADD CONSTRAINT CK_Prioridad CHECK (prioridad BETWEEN 0 AND 6 );
+ALTER TABLE persona ADD CONSTRAINT CK_Talla CHECK (talla IN ('XS','S','M','L','XL'));
+ALTER TABLE vestuario ADD CONSTRAINT CK_Talla CHECK (talla IN ('XS','S','M','L','XL'));
+ALTER TABLE telefono ADD CONSTRAINT CK_Telefono CHECK (telefono BETWEEN 999999 AND 1000000000000);
+ALTER TABLE bien ADD CONSTRAINT CK_Opinion CHECK (opinion IN ('G','P','V','A'));
 
 
 /*PRIMARY KEYS*/
