@@ -345,6 +345,12 @@ ALTER TABLE generico ADD CONSTRAINT pk_generico_orden PRIMARY KEY ( orden );
 ALTER TABLE perecedero ADD CONSTRAINT pk_perecedero_orden PRIMARY KEY ( orden );
 
 
+/*UNIQUE KEYS*/
+ALTER TABLE adultos ADD CONSTRAINT uk_adulto_correo UNIQUE ( correo );
+
+ALTER TABLE opinion ADD CONSTRAINT uk_opinion_justificacion UNIQUE ( justificacion );
+
+
 /*Eliminar datos de tablas*/
 DELETE FROM adulto;
 
