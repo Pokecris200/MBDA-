@@ -495,6 +495,15 @@ ALTER TABLE asignacion
     ADD CONSTRAINT FK_Asignacion_Numero FOREIGN KEY ( numerofamilia )
         REFERENCES familia ( numero );
 
+/*CICLO1:Cuales son los bienes mas populares*/
+                                               
+SELECT bien.tipo, COUNT(detalle.codigo) 
+FROM asignacion 
+JOIN detalle ON asignacion.numero = detalle.numero
+JOIN bien ON detalle.codigo = bien.codigo
+WHERE MONTHS_BETWEEN(fecha , CURRENT_DATE) <= 1 
+GROUP BY bien.tipo;
+
 
 /*Eliminar datos de tablas*/
 DELETE FROM adulto;
