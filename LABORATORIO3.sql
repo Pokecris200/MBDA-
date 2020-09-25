@@ -7,7 +7,7 @@ CREATE TABLE adultos (
 
 CREATE TABLE telefono (
     cedula    NUMBER(12) NOT NULL,
-    telfono   NUMBER(12) NOT NULL
+    telefono   NUMBER(12) NOT NULL
 );
 
 CREATE TABLE persona (
@@ -313,48 +313,79 @@ INSERT INTO telefono VALUES (
 
 
 /*Atributos*/
-ALTER TABLE bien check(bien.unitario < 100000 AND bien.unitario > -1);
-ALTER TABLE adulto check(adulto.correo LIKE '%@%');
-ALTER TABLE opiniongrupal check(opiniongrupal.estrellas < 6 AND opiniongrupal.estrellas > 0);
-ALTER TABLE persona check(persona.genero IN(
-    'M',
-    'F',
-    'O'
-));
-ALTER TABLE opinion check(opinion.opinion IN(
-    'E',
-    'B',
-    'R',
-    'M'
-));
-ALTER TABLE alojamiento CHECK (alojamiento.cantidad > 0);
-ALTER TABLE vestuario CHECK (vestuario.cantidad > 0);
-ALTER TABLE perecedero check(perecedero.cantidad > 0);
-ALTER TABLE generico check(generico.cantidad > 0);
-ALTER TABLE bien CHECK (bien.codigo LIKE ('%0' OR '%1')AND (SUBSTRING(bien.codigo,0,2) = UPPER(SUBSTRING(bien.codigo,0,2))) AND SUBSTRING(bien.codigo, 2, 2 ) SIMILAR to '[0-9]*' );
-ALTER TABLE localidad check(localidad.prioridad BETWEEN 0 AND 5);
-ALTER TABLE persona check(persona.talla IN(
-    'XS',
-    'S',
-    'M',
-    'L',
-    'XL'
-));
-ALTER TABLE vestuario check(vestuario.talla IN(
-    'XS',
-    'S',
-    'M',
-    'L',
-    'XL'
-));
-ALTER TABLE telefono CHECK (telefono.telefono BETWEEN 1000000 AND 999999999999);
-ALTER TABLE bien check(opinion.opinion IN(
-    'G',
-    'P',
-    'V',
-    'A'
-));
+ALTER TABLE bien
+    ADD CONSTRAINT ck_bien_unitario CHECK ( unitario < 100000
+                                            AND unitario > - 1 );
 
+ALTER TABLE adultos
+    ADD CONSTRAINT ck_correo CHECK ( correo LIKE '%@%'
+                                     AND correo LIKE '%.%' );
+
+ALTER TABLE opiniongrupal
+    ADD CONSTRAINT ck_estrellas CHECK ( estrellas < 6
+                                        AND estrellas > 0 );
+
+ALTER TABLE persona
+    ADD CONSTRAINT ck_genero CHECK ( genero IN (
+        'M',
+        'F',
+        'O'
+    ) );
+
+ALTER TABLE opinion
+    ADD CONSTRAINT ck_opinion CHECK ( opinion IN (
+        'E',
+        'B',
+        'R',
+        'M'
+    ) );
+
+ALTER TABLE alojamiento ADD CONSTRAINT ck_cantidad_a CHECK ( personas > 0 );
+
+ALTER TABLE vestuario ADD CONSTRAINT ck_cantidad_v CHECK ( cantidad > 0 );
+
+ALTER TABLE perecedero ADD CONSTRAINT ck_cantidad_p CHECK ( cantidad > 0 );
+
+ALTER TABLE generico ADD CONSTRAINT ck_cantidad_g CHECK ( cantidad > 0 );
+
+ALTER TABLE bien
+    ADD CONSTRAINT ck_bien_codigo CHECK ( ( codigo LIKE ( '%0' )
+                                            OR codigo LIKE ( '%1' ) )
+                                          AND ( substr(codigo, 0, 2) = upper(substr(codigo, 0, 2)) )
+                                          AND translate(substr(codigo, 2, 2), 'T 0123456789', 'T') IS NULL );
+
+ALTER TABLE localidad
+    ADD CONSTRAINT ck_prioridad CHECK ( prioridad BETWEEN 0 AND 6 );
+
+ALTER TABLE persona
+    ADD CONSTRAINT ck_talla CHECK ( talla IN (
+        'XS',
+        'S',
+        'M',
+        'L',
+        'XL'
+    ) );
+
+ALTER TABLE vestuario
+    ADD CONSTRAINT ck_talla_v CHECK ( talla IN (
+        'XS',
+        'S',
+        'M',
+        'L',
+        'XL'
+    ) );
+
+ALTER TABLE telefono
+    ADD CONSTRAINT ck_telefono CHECK ( telefono BETWEEN 999999 AND 1000000000000 );
+
+ALTER TABLE bien
+    ADD CONSTRAINT ck_opinion CHECK ( tipo IN (
+        'G',
+        'P',
+        'V',
+        'A'
+    ) );
+                                               
 
 /*PRIMARY KEYS*/
 ALTER TABLE adultos ADD CONSTRAINT pk_adultos_cedula PRIMARY KEY ( cedula );
