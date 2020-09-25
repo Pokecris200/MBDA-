@@ -312,6 +312,39 @@ INSERT INTO telefono VALUES (
 );/*no es posible que una cedula valida tenga tan pocos digitos*/
 
 
+/*PRIMARY KEYS*/
+ALTER TABLE adultos ADD CONSTRAINT pk_adultos_cedula PRIMARY KEY ( cedula );
+
+ALTER TABLE telefono ADD CONSTRAINT pk_telefono_telefono PRIMARY KEY ( telefono );
+
+ALTER TABLE persona ADD CONSTRAINT pk_presona_codigo PRIMARY KEY ( codigo );
+
+ALTER TABLE opinion ADD CONSTRAINT pk_opinion_numero PRIMARY KEY ( numero );
+
+ALTER TABLE opiniongrupal ADD CONSTRAINT pk_grupal_numero PRIMARY KEY ( numero );
+
+ALTER TABLE familia ADD CONSTRAINT pk_familia_numero PRIMARY KEY ( numero );
+
+ALTER TABLE localidad ADD CONSTRAINT pk_localidad_nombre PRIMARY KEY ( nombre );
+
+ALTER TABLE bien ADD CONSTRAINT pk_bien_codigo PRIMARY KEY ( codigo );
+
+ALTER TABLE reemplazo ADD CONSTRAINT pk_reemplaza_bien PRIMARY KEY ( bien,
+                                                                     bien_reemplazo );
+
+ALTER TABLE asignacion ADD CONSTRAINT pk_asignacion_numero PRIMARY KEY ( numero );
+
+ALTER TABLE detalle ADD CONSTRAINT pk_detalle_orden PRIMARY KEY ( orden );
+
+ALTER TABLE alojamiento ADD CONSTRAINT pk_alojamiento_orden PRIMARY KEY ( orden );
+
+ALTER TABLE vestuario ADD CONSTRAINT pk_vestuario_orden PRIMARY KEY ( orden );
+
+ALTER TABLE generico ADD CONSTRAINT pk_generico_orden PRIMARY KEY ( orden );
+
+ALTER TABLE perecedero ADD CONSTRAINT pk_perecedero_orden PRIMARY KEY ( orden );
+
+
 /*Eliminar datos de tablas*/
 DELETE FROM adulto;
 
@@ -342,3 +375,36 @@ DELETE FROM detalle;
 DELETE FROM bien;
 
 DELETE FROM asignacion;
+
+
+/*Eliminar tablas*/
+
+DROP TABLE adultos CASCADE CONSTRAINTS;
+
+DROP TABLE telefono CASCADE CONSTRAINTS;
+
+DROP TABLE alojamiento CASCADE CONSTRAINTS;
+
+DROP TABLE asignacion CASCADE CONSTRAINTS;
+
+DROP TABLE bien CASCADE CONSTRAINTS;
+
+DROP TABLE detalle CASCADE CONSTRAINTS;
+
+DROP TABLE familia CASCADE CONSTRAINTS;
+
+DROP TABLE generico CASCADE CONSTRAINTS;
+
+DROP TABLE localidad CASCADE CONSTRAINTS;
+
+DROP TABLE opinion CASCADE CONSTRAINTS;
+
+DROP TABLE opiniongrupal CASCADE CONSTRAINTS;
+
+DROP TABLE perecedero CASCADE CONSTRAINTS;
+
+DROP TABLE persona CASCADE CONSTRAINTS;
+
+DROP TABLE reemplazo CASCADE CONSTRAINTS;
+
+DROP TABLE vestuario CASCADE CONSTRAINTS;
