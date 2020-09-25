@@ -312,6 +312,50 @@ INSERT INTO telefono VALUES (
 );/*no es posible que una cedula valida tenga tan pocos digitos*/
 
 
+/*Atributos*/
+ALTER TABLE bien check(bien.unitario < 100000 AND bien.unitario > -1);
+ALTER TABLE adulto check(adulto.correo LIKE '%@%');
+ALTER TABLE opiniongrupal check(opiniongrupal.estrellas < 6 AND opiniongrupal.estrellas > 0);
+ALTER TABLE persona check(persona.genero IN(
+    'M',
+    'F',
+    'O'
+));
+ALTER TABLE opinion check(opinion.opinion IN(
+    'E',
+    'B',
+    'R',
+    'M'
+));
+ALTER TABLE alojamiento CHECK (alojamiento.cantidad > 0);
+ALTER TABLE vestuario CHECK (vestuario.cantidad > 0);
+ALTER TABLE perecedero check(perecedero.cantidad > 0);
+ALTER TABLE generico check(generico.cantidad > 0);
+ALTER TABLE bien CHECK (bien.codigo LIKE ('%0' OR '%1')AND (SUBSTRING(bien.codigo,0,2) = UPPER(SUBSTRING(bien.codigo,0,2))) AND SUBSTRING(bien.codigo, 2, 2 ) SIMILAR to '[0-9]*' );
+ALTER TABLE localidad check(localidad.prioridad BETWEEN 0 AND 5);
+ALTER TABLE persona check(persona.talla IN(
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL'
+));
+ALTER TABLE vestuario check(vestuario.talla IN(
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL'
+));
+ALTER TABLE telefono CHECK (telefono.telefono BETWEEN 1000000 AND 999999999999);
+ALTER TABLE bien check(opinion.opinion IN(
+    'G',
+    'P',
+    'V',
+    'A'
+));
+
+
 /*PRIMARY KEYS*/
 ALTER TABLE adultos ADD CONSTRAINT pk_adultos_cedula PRIMARY KEY ( cedula );
 
