@@ -394,6 +394,76 @@ ALTER TABLE adultos ADD CONSTRAINT uk_adulto_correo UNIQUE ( correo );
 
 ALTER TABLE opinion ADD CONSTRAINT uk_opinion_justificacion UNIQUE ( justificacion );
 
+    
+/*FOREIGN KEYS*/
+ALTER TABLE adultos
+    ADD CONSTRAINT FK_Adulto_Codigo FOREIGN KEY ( codigo )
+        REFERENCES persona ( codigo );
+
+ALTER TABLE telefono
+    ADD CONSTRAINT FK_Telefono_Cedula FOREIGN KEY ( cedula )
+        REFERENCES adultos ( cedula );
+
+ALTER TABLE opinion
+    ADD CONSTRAINT FK_Opinion_Codigo FOREIGN KEY ( codigo )
+        REFERENCES persona ( codigo );
+
+ALTER TABLE opinion
+    ADD CONSTRAINT FK_Opinion_Codigo_Bien FOREIGN KEY ( codigo_bien )
+        REFERENCES bien ( codigo );
+
+ALTER TABLE opiniongrupal
+    ADD CONSTRAINT FK_Opiniongrupal_Numero FOREIGN KEY ( numero )
+        REFERENCES opinion ( numero );
+
+ALTER TABLE familia
+    ADD CONSTRAINT FK_Familia_Codigo FOREIGN KEY ( codigo )
+        REFERENCES persona ( codigo );
+
+ALTER TABLE familia
+    ADD CONSTRAINT FK_Familia_Nombre FOREIGN KEY ( nombre )
+        REFERENCES localidad ( nombre );
+
+ALTER TABLE reemplazo
+    ADD CONSTRAINT FK_Reemplaza_Bien FOREIGN KEY ( bien )
+        REFERENCES bien ( codigo );
+
+ALTER TABLE reemplazo
+    ADD CONSTRAINT FK_Reemplaza_Bien_reemplazo FOREIGN KEY ( bien_reemplazo )
+        REFERENCES bien ( codigo );
+
+ALTER TABLE alojamiento
+    ADD CONSTRAINT FK_Alojamiento_Orden FOREIGN KEY ( orden )
+        REFERENCES detalle ( orden );
+
+ALTER TABLE alojamiento
+    ADD CONSTRAINT FK_Alojamiento_Nombre FOREIGN KEY ( nombre )
+        REFERENCES localidad ( nombre );
+
+ALTER TABLE vestuario
+    ADD CONSTRAINT FK_Vestuario_Orden FOREIGN KEY ( orden )
+        REFERENCES detalle ( orden );
+
+ALTER TABLE generico
+    ADD CONSTRAINT FK_Generico_Orden FOREIGN KEY ( orden )
+        REFERENCES detalle ( orden );
+
+ALTER TABLE perecedero
+    ADD CONSTRAINT FK_Perecedero_Orden FOREIGN KEY ( orden )
+        REFERENCES detalle ( orden );
+
+ALTER TABLE detalle
+    ADD CONSTRAINT FK_Detalle_Numero FOREIGN KEY ( numero )
+        REFERENCES asignacion ( numero );
+
+ALTER TABLE detalle
+    ADD CONSTRAINT FK_Detalle_Codigo FOREIGN KEY ( codigo )
+        REFERENCES bien ( codigo );
+
+ALTER TABLE asignacion
+    ADD CONSTRAINT FK_Asignacion_Numero FOREIGN KEY ( numerofamilia )
+        REFERENCES familia ( numero );
+
 
 /*Eliminar datos de tablas*/
 DELETE FROM adulto;
