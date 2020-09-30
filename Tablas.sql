@@ -28,7 +28,6 @@ CREATE TABLE bodega (
     nombre_bodega        VARCHAR(20) NOT NULL,
     municipio            VARCHAR(20) NOT NULL,
     departamento         VARCHAR(20) NOT NULL,
-    numero_serie_pieza   NUMBER(6) NOT NULL,
     proveedor            VARCHAR(8) NOT NULL
 );
 
