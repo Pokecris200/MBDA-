@@ -58,7 +58,7 @@ CREATE TABLE estado (
     revisado_por      NUMBER(7) NOT NULL,
     numero_pieza      NUMBER(6) NOT NULL,
     calidad           VARCHAR(1) NOT NULL,
-    observaciones     VARCHAR(250)
+    observaciones     VARCHAR(250) NOT NULL
 );
 
 
