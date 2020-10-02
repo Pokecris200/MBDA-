@@ -94,10 +94,6 @@ CREATE TABLE pieza_extraccion_petrolera (
 );
 
 
-
-
-
-
 /*PRIMARY KEYS*/
 ALTER TABLE empresa ADD CONSTRAINT pk_empresa_nit PRIMARY KEY ( nit );
 
@@ -197,4 +193,57 @@ ALTER TABLE pedido_pieza
 ALTER TABLE pedido_pieza
     ADD CONSTRAINT fk_pedido_bodega FOREIGN KEY ( bodega_reclamo )
         REFERENCES bodega ( nombre_bodega );
+        
+        
+/*Eliminar datos*/
+DELETE FROM proveedor;
+
+DELETE FROM persona_juridica;
+
+DELETE FROM empresa;
+
+DELETE FROM provee;
+
+DELETE FROM bodega;
+
+DELETE FROM inventario;
+
+DELETE FROM empleado;
+
+DELETE FROM experto;
+
+DELETE FROM estado;
+
+DELETE FROM permiso;
+
+DELETE FROM pedido_pieza;
+
+DELETE FROM pieza_extraccion_petrolera;
+
+
+/*ELIMINAR TABLAS*/
+DROP TABLE proveedor CASCADE CONSTRAINTS;
+
+DROP TABLE persona_juridica CASCADE CONSTRAINTS;
+
+DROP TABLE empresa CASCADE CONSTRAINTS;
+
+DROP TABLE provee CASCADE CONSTRAINTS;
+
+DROP TABLE bodega CASCADE CONSTRAINTS;
+
+DROP TABLE inventario CASCADE CONSTRAINTS;
+
+DROP TABLE empleado CASCADE CONSTRAINTS;
+
+DROP TABLE experto CASCADE CONSTRAINTS;
+
+DROP TABLE estado CASCADE CONSTRAINTS;
+
+DROP TABLE permiso CASCADE CONSTRAINTS;
+
+DROP TABLE pedido_pieza CASCADE CONSTRAINTS;
+
+DROP TABLE pieza_extraccion_petrolera CASCADE CONSTRAINTS;
+
 
