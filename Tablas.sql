@@ -195,6 +195,34 @@ ALTER TABLE pedido_pieza
         REFERENCES bodega ( nombre_bodega );
         
         
+ /*RESTRICCIONES DECLARATIVAS*/
+ALTER TABLE proveedor ADD CONSTRAINT ck_correo CHECK ( correo LIKE '%@petrolinventories.com.co' ); /*correo valido de la empresa termina asi*/
+
+ALTER TABLE proveedor ADD CONSTRAINT ck_codigo CHECK ( codigo LIKE 'PROV%' );
+
+ALTER TABLE proveedor
+    ADD CONSTRAINT ck_telefono CHECK ( telefono BETWEEN 3000000000 AND 4000000000 );
+
+ALTER TABLE persona_juridica
+    ADD CONSTRAINT ck_juridica_cedula CHECK ( cedula BETWEEN 1000000000 AND 9999999999 );
+
+ALTER TABLE persona_juridica
+    ADD CONSTRAINT ck_juridica__nit CHECK ( nit BETWEEN 1000000000 AND 9999999999 );/*TOCAR METERLE PRIMERO EL LEN PARA QUE COJA LOS PRIMEROS 9 NUMEROS,AUNQUE TOCARIA CAMBIAR EL ATRIBUTO DE INT A VARCHAR, PERO POR EL MOMENTO SE DEJA COMO INT*/
+
+ALTER TABLE persona_juridica ADD CONSTRAINT ck_juridica_codigo CHECK ( codigo LIKE 'PROV%' );
+
+ALTER TABLE empresa
+    ADD CONSTRAINT ck_empresa_nit CHECK ( nit BETWEEN 1000000000 AND 9999999999 );
+
+ALTER TABLE empresa ADD CONSTRAINT ck_empresa_codgio CHECK ( codigo LIKE 'PROV%' );
+
+ALTER TABLE provee ADD CONSTRAINT ck_provee_proveedor CHECK ( codigo_proveedor LIKE 'PROV%' );
+
+ALTER TABLE provee ADD CONSTRAINT ck_provee_bodega CHECK ( nombre_bodega LIKE 'Bodega %' );
+
+ALTER TABLE bodega ADD CONSTRAINT ck_bodega_nombre CHECK ( nombre_bodega LIKE 'Bodega %' );
+       
+        
 /*Eliminar datos*/
 DELETE FROM proveedor;
 
