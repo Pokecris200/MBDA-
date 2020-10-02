@@ -50,6 +50,7 @@ CREATE TABLE empleado (
 );
 
 CREATE TABLE experto (
+    id                         NUMBER(7) NOT NULL,
     cargo                      VARCHAR(25) NOT NULL,
     departamento_experiencia   VARCHAR(20) NOT NULL
 );
