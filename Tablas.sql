@@ -88,6 +88,8 @@ CREATE TABLE pieza_extraccion_petrolera (
 );
 
 
+
+
 /*PRIMARY KEYS*/
 ALTER TABLE empresa ADD CONSTRAINT pk_empresa_codigo PRIMARY KEY ( codigo );
 
@@ -97,9 +99,7 @@ ALTER TABLE proveedor ADD CONSTRAINT pk_proveedor_codigo PRIMARY KEY ( codigo );
 
 ALTER TABLE bodega ADD CONSTRAINT pk_bodega_nombre PRIMARY KEY ( nombre_bodega );
 
-ALTER TABLE inventario ADD CONSTRAINT pk_inventario_numero PRIMARY KEY ( numero_inventario );
-
-ALTER TABLE dimensiones ADD CONSTRAINT pk_dimension_numero PRIMARY KEY ( numero_pieza );
+ALTER TABLE inventario ADD CONSTRAINT pk_inventario_id PRIMARY KEY ( ID_inventario );
 
 ALTER TABLE pieza_extraccion_petrolera ADD CONSTRAINT pk_numero_extraccion PRIMARY KEY ( numero_serie );
 
@@ -112,3 +112,25 @@ ALTER TABLE empleado ADD CONSTRAINT pk_empleado_id PRIMARY KEY ( id );
 ALTER TABLE experto ADD CONSTRAINT pk_experto_id PRIMARY KEY ( id );
 
 ALTER TABLE estado ADD CONSTRAINT pk_estado_revision PRIMARY KEY ( numero_revision );
+
+
+/*UNIQUE KEYS*/
+ALTER TABLE persona_juridica ADD CONSTRAINT uk_juridica_cedula UNIQUE ( cedula );
+
+ALTER TABLE persona_juridica ADD CONSTRAINT uk_juridica_nit UNIQUE ( nit );
+
+ALTER TABLE empresa ADD CONSTRAINT uk_empresa_nombre UNIQUE ( nombre );
+
+ALTER TABLE empresa ADD CONSTRAINT uk_empresa_nit UNIQUE ( nit );
+
+ALTER TABLE proveedor ADD CONSTRAINT uk_proveedor_telefono UNIQUE ( telefono );
+
+ALTER TABLE proveedor ADD CONSTRAINT uk_proveedor_correo UNIQUE ( correo );
+
+ALTER TABLE empleado ADD CONSTRAINT uk_empleado_correo UNIQUE ( correo );
+
+ALTER TABLE empleado ADD CONSTRAINT uk_empleado_telefono UNIQUE ( numero_telefonico );
+
+ALTER TABLE empleado ADD CONSTRAINT uk_empleado_cedula UNIQUE ( cedula );
+
+ALTER TABLE pieza_extraccion_petrolera ADD CONSTRAINT uk_pieza_dimensiones UNIQUE ( dimensiones );
