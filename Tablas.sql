@@ -24,6 +24,11 @@ CREATE TABLE empresa (
     telefono2          NUMBER(10)
 );
 
+CREATE TABLE provee (
+    codigo_proveedor   VARCHAR(8) NOT NULL,
+    nombre_bodega      VARCHAR(20) NOT NULL
+    
+);
 CREATE TABLE bodega (
     nombre_bodega        VARCHAR(20) NOT NULL,
     municipio            VARCHAR(20) NOT NULL,
@@ -51,7 +56,6 @@ CREATE TABLE empleado (
 
 CREATE TABLE experto (
     id                         NUMBER(7) NOT NULL,
-    cargo                      VARCHAR(25) NOT NULL,
     departamento_experiencia   VARCHAR(20) NOT NULL
 );
 
@@ -92,12 +96,17 @@ CREATE TABLE pieza_extraccion_petrolera (
 
 
 
-/*PRIMARY KEYS*/
-ALTER TABLE empresa ADD CONSTRAINT pk_empresa_codigo PRIMARY KEY ( codigo );
 
-ALTER TABLE persona_juridica ADD CONSTRAINT pk_juridica_codigo PRIMARY KEY ( codigo );
+
+/*PRIMARY KEYS*/
+ALTER TABLE empresa ADD CONSTRAINT pk_empresa_nit PRIMARY KEY ( nit );
+
+ALTER TABLE persona_juridica ADD CONSTRAINT pk_juridica_cedula PRIMARY KEY ( cedula );
 
 ALTER TABLE proveedor ADD CONSTRAINT pk_proveedor_codigo PRIMARY KEY ( codigo );
+
+ALTER TABLE provee ADD CONSTRAINT pk_provee_codigos PRIMARY KEY ( codigo_proveedor,
+                                                                  nombre_bodega );
 
 ALTER TABLE bodega ADD CONSTRAINT pk_bodega_nombre PRIMARY KEY ( nombre_bodega );
 
@@ -117,13 +126,10 @@ ALTER TABLE estado ADD CONSTRAINT pk_estado_revision PRIMARY KEY ( numero_revisi
 
 
 /*UNIQUE KEYS*/
-ALTER TABLE persona_juridica ADD CONSTRAINT uk_juridica_cedula UNIQUE ( cedula );
 
 ALTER TABLE persona_juridica ADD CONSTRAINT uk_juridica_nit UNIQUE ( nit );
 
 ALTER TABLE empresa ADD CONSTRAINT uk_empresa_nombre UNIQUE ( nombre );
-
-ALTER TABLE empresa ADD CONSTRAINT uk_empresa_nit UNIQUE ( nit );
 
 ALTER TABLE proveedor ADD CONSTRAINT uk_proveedor_telefono UNIQUE ( telefono );
 
@@ -136,3 +142,59 @@ ALTER TABLE empleado ADD CONSTRAINT uk_empleado_telefono UNIQUE ( numero_telefon
 ALTER TABLE empleado ADD CONSTRAINT uk_empleado_cedula UNIQUE ( cedula );
 
 ALTER TABLE pieza_extraccion_petrolera ADD CONSTRAINT uk_pieza_dimensiones UNIQUE ( dimensiones );
+
+
+/*FOREIGN KEYS*/
+
+ALTER TABLE empresa
+    ADD CONSTRAINT fk_empresa_codigo FOREIGN KEY ( codigo )
+        REFERENCES proveedor ( codigo );
+
+ALTER TABLE persona_juridica
+    ADD CONSTRAINT fk_persona_codigo FOREIGN KEY ( codigo )
+        REFERENCES proveedor ( codigo );
+
+ALTER TABLE provee
+    ADD CONSTRAINT fk_provee_proveedor FOREIGN KEY ( codigo_proveedor )
+        REFERENCES proveedor ( codigo );
+
+ALTER TABLE provee
+    ADD CONSTRAINT fk_provee_bodega FOREIGN KEY ( nombre_bodega )
+        REFERENCES bodega ( nombre_bodega );
+
+ALTER TABLE inventario
+    ADD CONSTRAINT fk_inventario_pieza FOREIGN KEY ( numero_serie_pieza )
+        REFERENCES pieza_extraccion_petrolera ( numero_serie );    /*TOCA HACER LA RELACION ENTRE EMPLEADO Y EXPERTO, PUESTO QUE NO TENGO */
+
+ALTER TABLE inventario
+    ADD CONSTRAINT fk_inventario_bodega FOREIGN KEY ( nombre_bodega )
+        REFERENCES bodega ( nombre_bodega );     /*NI PUTA IDEA DE CUAL PUEDE SER, Y NO ME SALE LA RESPUESTA DE LOS HUEVOS*/
+
+ALTER TABLE estado
+    ADD CONSTRAINT fk_estado_revisado FOREIGN KEY ( revisado_por )
+        REFERENCES experto ( id );
+
+ALTER TABLE estado
+    ADD CONSTRAINT fk_estado_pieza FOREIGN KEY ( numero_pieza )
+        REFERENCES pieza_extraccion_petrolera ( numero_serie );
+
+ALTER TABLE permiso
+    ADD CONSTRAINT fk_permiso_id_autor FOREIGN KEY ( id_autor )
+        REFERENCES empleado ( id );
+
+ALTER TABLE permiso
+    ADD CONSTRAINT fk_permiso_numero_pieza FOREIGN KEY ( numero_pieza )
+        REFERENCES pieza_extraccion_petrolera ( numero_serie );
+
+ALTER TABLE permiso
+    ADD CONSTRAINT fk_permiso_pedido FOREIGN KEY ( pedido )
+        REFERENCES pedido_pieza ( numero_pedido );
+
+ALTER TABLE pedido_pieza
+    ADD CONSTRAINT fk_pedido_autor FOREIGN KEY ( id_autor )
+        REFERENCES empleado ( id );
+
+ALTER TABLE pedido_pieza
+    ADD CONSTRAINT fk_pedido_bodega FOREIGN KEY ( bodega_reclamo )
+        REFERENCES bodega ( nombre_bodega );
+
