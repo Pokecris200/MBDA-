@@ -42,6 +42,7 @@ CREATE TABLE empleado (
     nombre                 VARCHAR(20) NOT NULL,
     apellido               VARCHAR(20) NOT NULL,
     id                     NUMBER(7) NOT NULL,
+    cargo                  VARCHAR(25) NOT NULL,
     correo                 VARCHAR(15) NOT NULL,
     numero_telefonico      NUMBER(10) NOT NULL,
     departamento_trabajo   VARCHAR(20) NOT NULL,
@@ -49,7 +50,7 @@ CREATE TABLE empleado (
 );
 
 CREATE TABLE experto (
-    id                         NUMBER(7) NOT NULL,
+    cargo                      VARCHAR(25) NOT NULL,
     departamento_experiencia   VARCHAR(20) NOT NULL
 );
 
