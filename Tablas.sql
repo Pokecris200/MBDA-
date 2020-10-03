@@ -91,11 +91,10 @@ CREATE TABLE pieza_extraccion_petrolera (
     dimensiones    VARCHAR(10) NOT NULL
 );
 
-
 /*PRIMARY KEYS*/
-ALTER TABLE empresa ADD CONSTRAINT pk_empresa_nit PRIMARY KEY ( nit );
+ALTER TABLE empresa ADD CONSTRAINT pk_empresa_codigo PRIMARY KEY ( codigo );
 
-ALTER TABLE persona_juridica ADD CONSTRAINT pk_juridica_cedula PRIMARY KEY ( cedula );
+ALTER TABLE persona_juridica ADD CONSTRAINT pk_juridica_codigo PRIMARY KEY ( codigo );
 
 ALTER TABLE proveedor ADD CONSTRAINT pk_proveedor_codigo PRIMARY KEY ( codigo );
 
@@ -119,11 +118,17 @@ ALTER TABLE experto ADD CONSTRAINT pk_experto_id PRIMARY KEY ( id );
 ALTER TABLE estado ADD CONSTRAINT pk_estado_revision PRIMARY KEY ( numero_revision );
 
 
+
+
 /*UNIQUE KEYS*/
 
 ALTER TABLE persona_juridica ADD CONSTRAINT uk_juridica_nit UNIQUE ( nit );
 
+ALTER TABLE persona_juridica ADD CONSTRAINT uk_juridica_cedula UNIQUE ( cedula );
+
 ALTER TABLE empresa ADD CONSTRAINT uk_empresa_nombre UNIQUE ( nombre );
+
+ALTER TABLE empresa ADD CONSTRAINT uk_empresa_nit UNIQUE ( nit );
 
 ALTER TABLE proveedor ADD CONSTRAINT uk_proveedor_telefono UNIQUE ( telefono );
 
@@ -136,6 +141,7 @@ ALTER TABLE empleado ADD CONSTRAINT uk_empleado_telefono UNIQUE ( numero_telefon
 ALTER TABLE empleado ADD CONSTRAINT uk_empleado_cedula UNIQUE ( cedula );
 
 ALTER TABLE pieza_extraccion_petrolera ADD CONSTRAINT uk_pieza_dimensiones UNIQUE ( dimensiones );
+
 
 
 /*FOREIGN KEYS*/
