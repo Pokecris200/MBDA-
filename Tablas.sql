@@ -73,7 +73,6 @@ CREATE TABLE permiso (
     id_autor          NUMBER(7) NOT NULL,
     numero_pieza      NUMBER(6) NOT NULL,
     detalle           VARCHAR(250) NOT NULL,
-    observaciones     VARCHAR(100),
     estado            VARCHAR(8) NOT NULL,
     pedido            NUMBER(7)
 );
@@ -89,8 +88,7 @@ CREATE TABLE pedido_pieza (
 CREATE TABLE pieza_extraccion_petrolera (
     numero_serie   NUMBER(6) NOT NULL,
     tipo           VARCHAR(15) NOT NULL,
-    dimensiones    VARCHAR(10) NOT NULL,
-    estado         VARCHAR(8) NOT NULL
+    dimensiones    VARCHAR(10) NOT NULL
 );
 
 
