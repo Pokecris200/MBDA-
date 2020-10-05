@@ -2,26 +2,25 @@
 
 CREATE TABLE proveedor (
     codigo     VARCHAR(8) NOT NULL,
-    telefono   NUMBER(10) NOT NULL,
+    telefono   VARCHAR(10) NOT NULL,
     correo     VARCHAR(15) NOT NULL
 );
 
 CREATE TABLE persona_juridica (
     nombre     VARCHAR(20) NOT NULL,
     apellido   VARCHAR(20) NOT NULL,
-    cedula     NUMBER(10) NOT NULL,
-    nit        NUMBER(10) NOT NULL,
+    cedula     VARCHAR(10) NOT NULL,
+    nit        VARCHAR(10) NOT NULL,
     codigo     VARCHAR(8) NOT NULL
 );
 
 CREATE TABLE empresa (
     nombre             VARCHAR(25) NOT NULL,
-    nit                NUMBER(10) NOT NULL,
+    nit                VARCHAR(10) NOT NULL,
     codigo             VARCHAR(8) NOT NULL,
     direccion          VARCHAR(50) NOT NULL,
     ciudad             VARCHAR(25) NOT NULL,
-    direccion_postal   VARCHAR(6),
-    telefono2          NUMBER(10)
+    direccion_postal   VARCHAR(6)
 );
 
 CREATE TABLE provee (
@@ -32,36 +31,40 @@ CREATE TABLE provee (
 CREATE TABLE bodega (
     nombre_bodega        VARCHAR(20) NOT NULL,
     municipio            VARCHAR(20) NOT NULL,
-    departamento         VARCHAR(20) NOT NULL,
-    proveedor            VARCHAR(8) NOT NULL
+    departamento         VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE inventario (
     nombre_bodega           VARCHAR(20) NOT NULL,   
     numero_serie_pieza      NUMBER(6) NOT NULL,
-    ID_inventario           VARCHAR(6) NOT NULL,
+    id_inventarios          VARCHAR(6) NOT NULL,
     disponibilidad          VARCHAR(13) NOT NULL
+);
+
+CREATE TABLE revisa (
+    id_empleado     VARCHAR(7) NOT NULL,
+    id_inventario   VARCHAR(6) NOT NULL
 );
 
 CREATE TABLE empleado (
     nombre                 VARCHAR(20) NOT NULL,
     apellido               VARCHAR(20) NOT NULL,
-    id                     NUMBER(7) NOT NULL,
+    id                     VARCHAR(7) NOT NULL,
     cargo                  VARCHAR(25) NOT NULL,
     correo                 VARCHAR(15) NOT NULL,
-    numero_telefonico      NUMBER(10) NOT NULL,
+    numero_telefonico      VARCHAR(20) NOT NULL,
     departamento_trabajo   VARCHAR(20) NOT NULL,
-    cedula                 NUMBER(10) NOT NULL
+    cedula                 VARCHAR(10) NOT NULL
 );
 
 CREATE TABLE experto (
-    id                         NUMBER(7) NOT NULL,
+    id                         VARCHAR(7) NOT NULL,
     departamento_experiencia   VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE estado (
     numero_revision   NUMBER(7) NOT NULL,
-    revisado_por      NUMBER(7) NOT NULL,
+    revisado_por      VARCHAR(7) NOT NULL,
     numero_pieza      NUMBER(6) NOT NULL,
     calidad           VARCHAR(1) NOT NULL,
     observaciones     VARCHAR(250) NOT NULL
@@ -70,18 +73,18 @@ CREATE TABLE estado (
 
 CREATE TABLE permiso (
     numero_permiso    NUMBER(7) NOT NULL,
-    id_autor          NUMBER(7) NOT NULL,
+    id_autor          VARCHAR(7) NOT NULL,
     numero_pieza      NUMBER(6) NOT NULL,
     detalle           VARCHAR(250) NOT NULL,
-    estado            VARCHAR(8) NOT NULL,
+    estado            VARCHAR(13) NOT NULL,
     pedido            NUMBER(7)
 );
 
 CREATE TABLE pedido_pieza (
     numero_pedido          NUMBER(7) NOT NULL,
-    id_autor               NUMBER(7) NOT NULL,
+    id_autor               VARCHAR(7) NOT NULL,
     departamento_trabajo   VARCHAR(20) NOT NULL,
-    cantidad_piezas        NUMBER(5) NOT NULL,
+    cantidad_piezas        VARCHAR(5) NOT NULL,
     bodega_reclamo         VARCHAR(20) NOT NULL
 );
 
@@ -91,7 +94,9 @@ CREATE TABLE pieza_extraccion_petrolera (
     dimensiones    VARCHAR(10) NOT NULL
 );
 
-/*PRIMARY KEYS*/
+
+/*
+PRIMARY KEYS*/
 ALTER TABLE empresa ADD CONSTRAINT pk_empresa_codigo PRIMARY KEY ( codigo );
 
 ALTER TABLE persona_juridica ADD CONSTRAINT pk_juridica_codigo PRIMARY KEY ( codigo );
@@ -103,7 +108,10 @@ ALTER TABLE provee ADD CONSTRAINT pk_provee_codigos PRIMARY KEY ( codigo_proveed
 
 ALTER TABLE bodega ADD CONSTRAINT pk_bodega_nombre PRIMARY KEY ( nombre_bodega );
 
-ALTER TABLE inventario ADD CONSTRAINT pk_inventario_id PRIMARY KEY ( ID_inventario );
+ALTER TABLE inventario ADD CONSTRAINT pk_inventario_id PRIMARY KEY ( id_inventarios );
+
+ALTER TABLE revisa ADD CONSTRAINT pk_revisa_inventario PRIMARY KEY ( id_inventario,
+                                                                     id_empleado );
 
 ALTER TABLE pieza_extraccion_petrolera ADD CONSTRAINT pk_numero_extraccion PRIMARY KEY ( numero_serie );
 
@@ -116,8 +124,6 @@ ALTER TABLE empleado ADD CONSTRAINT pk_empleado_id PRIMARY KEY ( id );
 ALTER TABLE experto ADD CONSTRAINT pk_experto_id PRIMARY KEY ( id );
 
 ALTER TABLE estado ADD CONSTRAINT pk_estado_revision PRIMARY KEY ( numero_revision );
-
-
 
 
 /*UNIQUE KEYS*/
@@ -161,14 +167,26 @@ ALTER TABLE provee
 ALTER TABLE provee
     ADD CONSTRAINT fk_provee_bodega FOREIGN KEY ( nombre_bodega )
         REFERENCES bodega ( nombre_bodega );
+         
+ALTER TABLE experto
+    ADD CONSTRAINT fk_experto_identificador FOREIGN KEY ( id )
+        REFERENCES empleado ( id );
 
 ALTER TABLE inventario
     ADD CONSTRAINT fk_inventario_pieza FOREIGN KEY ( numero_serie_pieza )
-        REFERENCES pieza_extraccion_petrolera ( numero_serie );    /*TOCA HACER LA RELACION ENTRE EMPLEADO Y EXPERTO, PUESTO QUE NO TENGO */
+        REFERENCES pieza_extraccion_petrolera ( numero_serie );   
 
 ALTER TABLE inventario
     ADD CONSTRAINT fk_inventario_bodega FOREIGN KEY ( nombre_bodega )
-        REFERENCES bodega ( nombre_bodega );     /*NI PUTA IDEA DE CUAL PUEDE SER, Y NO ME SALE LA RESPUESTA DE LOS HUEVOS*/
+        REFERENCES bodega ( nombre_bodega );    
+        
+ALTER TABLE revisa
+    ADD CONSTRAINT fk_revisa_inventario FOREIGN KEY ( id_inventario )
+        REFERENCES inventario ( id_inventarios );
+
+ALTER TABLE revisa
+    ADD CONSTRAINT fk_revisa_empleado FOREIGN KEY ( id_empleado )
+        REFERENCES empleado ( id );
 
 ALTER TABLE estado
     ADD CONSTRAINT fk_estado_revisado FOREIGN KEY ( revisado_por )
@@ -183,10 +201,6 @@ ALTER TABLE permiso
         REFERENCES empleado ( id );
 
 ALTER TABLE permiso
-    ADD CONSTRAINT fk_permiso_numero_pieza FOREIGN KEY ( numero_pieza )
-        REFERENCES pieza_extraccion_petrolera ( numero_serie );
-
-ALTER TABLE permiso
     ADD CONSTRAINT fk_permiso_pedido FOREIGN KEY ( pedido )
         REFERENCES pedido_pieza ( numero_pedido );
 
@@ -199,34 +213,101 @@ ALTER TABLE pedido_pieza
         REFERENCES bodega ( nombre_bodega );
         
         
- /*RESTRICCIONES DECLARATIVAS*/
-ALTER TABLE proveedor ADD CONSTRAINT ck_correo CHECK ( correo LIKE '%@petrolinventories.com.co' ); /*correo valido de la empresa termina asi*/
+/*RESTRICCIONES DECLARATIVAS*/
+ALTER TABLE proveedor
+    ADD CONSTRAINT ck_correo_proveer CHECK ( correo LIKE '%@%'
+                                             AND correo LIKE '%.com.co' ); /*Restriccion para correo de proveedor*/
 
-ALTER TABLE proveedor ADD CONSTRAINT ck_codigo CHECK ( codigo LIKE 'PROV%' );
+ALTER TABLE proveedor ADD CONSTRAINT ck_codigo CHECK ( codigo LIKE 'PROV%' );  /*Restriccion para codigo de proveedor*/
 
 ALTER TABLE proveedor
-    ADD CONSTRAINT ck_telefono CHECK ( telefono BETWEEN 3000000000 AND 4000000000 );
+    ADD CONSTRAINT ck_telefono CHECK ( substr(telefono, 1, 1) = '3'
+                                       AND length(telefono) = 10 ); /*Restriccion para telefono de proveedor*/
 
 ALTER TABLE persona_juridica
-    ADD CONSTRAINT ck_juridica_cedula CHECK ( cedula BETWEEN 1000000000 AND 9999999999 );
+    ADD CONSTRAINT ck_juridica_cedula CHECK ( length(cedula) = 10 ); /*Restriccion para cedula de persona juridica */
 
 ALTER TABLE persona_juridica
-    ADD CONSTRAINT ck_juridica__nit CHECK ( nit BETWEEN 1000000000 AND 9999999999 );/*TOCAR METERLE PRIMERO EL LEN PARA QUE COJA LOS PRIMEROS 9 NUMEROS,AUNQUE TOCARIA CAMBIAR EL ATRIBUTO DE INT A VARCHAR, PERO POR EL MOMENTO SE DEJA COMO INT*/
+    ADD CONSTRAINT ck_juridica__nit CHECK ( length(nit) = 10 ); /*Restriccion para nit de la persona juridica*/
 
-ALTER TABLE persona_juridica ADD CONSTRAINT ck_juridica_codigo CHECK ( codigo LIKE 'PROV%' );
+ALTER TABLE persona_juridica ADD CONSTRAINT ck_juridica_codigo CHECK ( codigo LIKE 'PROV%' ); /*Restriccion para codigo de persona juridica*/
 
 ALTER TABLE empresa
-    ADD CONSTRAINT ck_empresa_nit CHECK ( nit BETWEEN 1000000000 AND 9999999999 );
+    ADD CONSTRAINT ck_empresa_nit CHECK ( length(nit) = 10 ); /*Restriccion para nit de la empresa*/
 
-ALTER TABLE empresa ADD CONSTRAINT ck_empresa_codgio CHECK ( codigo LIKE 'PROV%' );
+ALTER TABLE empresa ADD CONSTRAINT ck_empresa_codgio CHECK ( codigo LIKE 'PROV%' ); /*Restriccion para codigo de la empresa*/
 
-ALTER TABLE provee ADD CONSTRAINT ck_provee_proveedor CHECK ( codigo_proveedor LIKE 'PROV%' );
+ALTER TABLE bodega ADD CONSTRAINT ck_bodega_nombre CHECK ( nombre_bodega LIKE 'Bodega %' ); /*Restriccion para nombre de la bodega*/
 
-ALTER TABLE provee ADD CONSTRAINT ck_provee_bodega CHECK ( nombre_bodega LIKE 'Bodega %' );
+ALTER TABLE inventario
+    ADD CONSTRAINT ck_disponible_inventario CHECK ( disponibilidad IN (
+        'Disponible',
+        'No Disponible'
+    ) ); /*Restriccion de disponible en inventario*/
 
-ALTER TABLE bodega ADD CONSTRAINT ck_bodega_nombre CHECK ( nombre_bodega LIKE 'Bodega %' );
-       
-        
+ALTER TABLE empleado
+    ADD CONSTRAINT ck_cargo CHECK ( cargo IN (
+        'TECNICO ERA 1',
+        'TECNICO ERA 2',
+        'OPERADOR POZO',
+        'RECORREDOR POZO',
+        'INGENIERO PETROLERO POZO',
+        'HSQE'
+    ) ); /*Restriccion de cargos en empleado*/
+
+ALTER TABLE empleado
+    ADD CONSTRAINT ck_empleado_correo CHECK ( correo LIKE ( '%@petrolinventories.com.co' ) ); /*Restriccion de correo en empleado*/
+
+ALTER TABLE empleado
+    ADD CONSTRAINT ck_empleado_depto CHECK ( departamento_trabajo IN (
+        'Pozos Petroleros'
+    ) ); /*Restriccion de departamento en empleado*/
+
+ALTER TABLE empleado
+    ADD CONSTRAINT ck_empleado_id CHECK ( substr(id, 1, 3) = '000' ); /*Restriccion de id de empleado*/
+
+ALTER TABLE empleado
+    ADD CONSTRAINT ck_empleado_cedula CHECK ( length(cedula) = 10 ); /*Restriccion de cedula de empleado*/
+
+ALTER TABLE empleado
+    ADD CONSTRAINT ck_empleado_telefono CHECK ( numero_telefonico LIKE ( '%Ext.%' ) ); /*Restriccion de numero de empleado*/
+
+ALTER TABLE experto
+    ADD CONSTRAINT ck_experto_dpto CHECK ( departamento_experiencia IN (
+        'Pozos Petroleros'
+    ) ); /*Restriccion de departamento de experto*/
+
+ALTER TABLE experto
+    ADD CONSTRAINT ck_experto_id CHECK ( substr(id, 1, 3) = '001' ); /*Restriccion de id de experto*/
+
+ALTER TABLE estado
+    ADD CONSTRAINT ck_estado_calidad CHECK ( calidad IN (
+        'E',
+        'B',
+        'R',
+        'M',
+        'P'
+    ) ); /*Restriccion de calidad de estado*/
+
+ALTER TABLE permiso
+    ADD CONSTRAINT ck_permiso_estado CHECK ( estado IN (
+        'Aceptado',
+        'No Aceptado'
+    ) ); /*Restriccion de aceptacion de permiso*/
+
+ALTER TABLE pedido_pieza
+    ADD CONSTRAINT ck_pedido_cantidad CHECK ( length(cantidad_piezas) <= 3 ); /*Restriccion de cantidad de piezas*/
+
+ALTER TABLE pieza_extraccion_petrolera
+    ADD CONSTRAINT ck_pieza_tipo CHECK ( tipo IN (
+        'Engranajes',
+        'Tornillos',
+        'Soldadoras',
+        'Tubos',
+        'Perforadoras'
+    ) ); /*Restriccion de tipos de pieza*/
+
+
 /*Eliminar datos*/
 DELETE FROM proveedor;
 
@@ -251,6 +332,8 @@ DELETE FROM permiso;
 DELETE FROM pedido_pieza;
 
 DELETE FROM pieza_extraccion_petrolera;
+
+DELETE FROM revisa;
 
 
 /*ELIMINAR TABLAS*/
@@ -278,4 +361,4 @@ DROP TABLE pedido_pieza CASCADE CONSTRAINTS;
 
 DROP TABLE pieza_extraccion_petrolera CASCADE CONSTRAINTS;
 
-
+DROP TABLE revisa CASCADE CONSTRAINTS;
