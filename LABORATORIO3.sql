@@ -109,30 +109,40 @@ CREATE TABLE asignacion (
 
 
 /*Pobla ok*/
+
+
 /*Poblar personas*/
+/*Refactorizacion: Se le agrega un valor al nuevo atributo hecho en la refactorizacion(numero)*/
 INSERT INTO persona VALUES (
     6541258,
-    'Jose maria Gimenez',
+    'Jose maria Jimenez',
+    'F',
     'M',
-    'tll',
-    TO_DATE('1990/08/20', 'yyyy/mm/dd')
+    TO_DATE('1990/08/20', 'yyyy/mm/dd'),
+    15000
 );
 
-INSERT INTO persona VALUES (
+INSERT
+    INTO persona
+VALUES (
     1134502,
     'Alejandra Rodriguez',
     'F',
-    'tll',
-    TO_DATE('1970/10/01', 'yyyy/mm/dd')
+    'L',
+    TO_DATE('1970/10/01', 'yyyy/mm/dd'),
+    15001
 );
+
 INSERT INTO persona VALUES (
     8541535,
     'Maria Fernanda Forero',
     'F',
-    'tll',
-    TO_DATE('1975/02/25', 'yyyy/mm/dd')
+    'S',
+    TO_DATE('1975/02/25', 'yyyy/mm/dd'),
+    15001
 );
 /*poblar opinion*/
+
 INSERT INTO opinion VALUES (
     10000,
     TO_DATE('2020/09/23', 'yyyy/mm/dd'),
@@ -161,25 +171,31 @@ INSERT INTO opinion VALUES (
 );
 
 /*poblar familia*/
+/*Refactorizacion: Se le agrega al insert un valor al nuevo atributo (numero_representante)*/
+
 INSERT INTO familia VALUES (
     22225,
     6541258,
-    'Bosa'
+    'Bosa',
+    1574865
 );
 
 INSERT INTO familia VALUES (
     22226,
     1134502,
-    'San Cristobal'
+    'San Cristobal',
+    1659486
 );
 
 INSERT INTO familia VALUES (
     22227,
     8541535,
-    'Chapinero'
+    'Chapinero',
+    9531547
 );
 
 /*poblar localidad*/
+
 INSERT INTO localidad VALUES (
     'Bosa',
     5,
@@ -198,6 +214,7 @@ INSERT INTO localidad VALUES (
     'Bogota'
 );
 /*poblar bien*/
+
 INSERT INTO bien VALUES (
     12345,
     'Jean',
@@ -228,6 +245,7 @@ INSERT INTO bien VALUES (
     11113
 );
 /*poblar asignacion*/
+
 INSERT INTO asignacion VALUES (
     200063214,
     TO_DATE('2020/09/24', 'yyyy/mm/dd'),
@@ -248,7 +266,6 @@ INSERT INTO asignacion VALUES (
     NULL,
     22227
 );
-
 
 
 /*Poblar NoOK donde no se acepta los INSERT*/
