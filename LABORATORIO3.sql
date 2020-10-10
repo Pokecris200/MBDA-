@@ -1,21 +1,22 @@
 /*Creacion de tablas*/
 CREATE TABLE adultos (
-    codigo      NUMBER(7) NOT NULL,
-    cedula      NUMBER(12) NOT NULL,
-    correo      VARCHAR(40) NOT NULL
+    codigo   NUMBER(7) NOT NULL,
+    cedula   VARCHAR(12) NOT NULL,
+    correo   VARCHAR(40) NOT NULL
 );
 
 CREATE TABLE telefono (
-    cedula    NUMBER(12) NOT NULL,
-    telefono   NUMBER(12) NOT NULL
+    cedula     VARCHAR(12) NOT NULL,
+    telefono   VARCHAR(12) NOT NULL
 );
-
+/*Refactorizacion de persona: Nos faltaba el atributo nuleable 'numero' para la persona*/
 CREATE TABLE persona (
     codigo       NUMBER(7) NOT NULL,
     nombre       VARCHAR(50) NOT NULL,
     genero       VARCHAR(1) NOT NULL,
     talla        VARCHAR(3) NOT NULL,
-    nacimiento   DATE NOT NULL
+    nacimiento   DATE NOT NULL,
+    numero       NUMBER(5)
 );
 
 CREATE TABLE opinion (
@@ -37,11 +38,12 @@ CREATE TABLE opiniongrupal (
     codigo          NUMBER(7) NOT NULL,
     codigo_bien     VARCHAR(5) NOT NULL
 );
-
+/*Refactorizacion: a tabla familia se le agrega el atributo nuleable 'codigo_representante'*/
 CREATE TABLE familia (
-    numero   NUMBER(5) NOT NULL,
-    codigo   NUMBER(7) NOT NULL,
-    nombre   VARCHAR(15) NOT NULL
+    numero                 NUMBER(5) NOT NULL,
+    codigo                 NUMBER(7) NOT NULL,
+    nombre                 VARCHAR(15) NOT NULL,
+    codigo_representante   NUMBER(7)
 );
 
 CREATE TABLE localidad (
@@ -51,7 +53,7 @@ CREATE TABLE localidad (
 );
 
 CREATE TABLE reemplazo (
-    bien    VARCHAR(5) NOT NULL,
+    bien             VARCHAR(5) NOT NULL,
     bien_reemplazo   VARCHAR(5) NOT NULL
 );
 
@@ -102,6 +104,9 @@ CREATE TABLE asignacion (
     aceptado        NUMBER(1),
     numerofamilia   NUMBER(5) NOT NULL
 );
+
+
+
 
 /*Pobla ok*/
 /*Poblar personas*/
