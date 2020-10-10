@@ -268,15 +268,17 @@ INSERT INTO asignacion VALUES (
 );
 
 
+/*Poblar NoOK*/
 /*Poblar NoOK donde no se acepta los INSERT*/
-INSERT INTO adulto VALUES (
+
+INSERT INTO adultos VALUES (
     25698,
     79186597,
     NULL
 );/*El correo no puede ser nulo*/
 
 INSERT INTO telefono VALUES (
-    'Santiago',
+    NULL,
     3228369854
 );/*La cedula es un string, cuando debe ser un numero que no supere los 12 digitos*/
 
@@ -285,7 +287,8 @@ INSERT INTO persona VALUES (
     'Santiago',
     'M',
     NULL,
-    TO_DATE('2020/09/24', 'yyyy/mm/dd')
+    TO_DATE('2020/09/24', 'yyyy/mm/dd'),
+    36541
 );/*El atributo talla debe ser un numero, no puede ser nulo*/
 
 INSERT INTO vestuario VALUES (
@@ -297,12 +300,15 @@ INSERT INTO vestuario VALUES (
 INSERT INTO familia VALUES (
     315,
     NULL,
-    'Familia Gomez'
+    'Familia Gomez',
+    6524187
 );/*El atributo codigo debe ser un numero que o supere los 7 digitos, no puede ser nulo*/
 
 
+
 /*Poblar NoOK donde aceptan los insert pero no deberia*/
-INSERT INTO adulto VALUES (
+
+INSERT INTO adultos VALUES (
     315,
     123,
     'diego.Forero@mail.com'
@@ -313,7 +319,8 @@ INSERT INTO persona VALUES (
     'Diego',
     'M',
     32,
-    TO_DATE('2010/09/24', 'yyyy/mm/dd')
+    TO_DATE('2010/09/24', 'yyyy/mm/dd'),
+    15001
 );/*Aun no ha cumplido la mayoria de edad, no deberia de estar en esta tabla*/
 
 INSERT INTO vestuario VALUES (
@@ -332,6 +339,8 @@ INSERT INTO telefono VALUES (
     315,
     3287984597
 );/*no es posible que una cedula valida tenga tan pocos digitos*/
+
+
 
 
 /*Atributos*/
