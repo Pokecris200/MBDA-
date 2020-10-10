@@ -599,6 +599,471 @@ FROM
 WHERE EXTRACT (YEAR(nacimiento))< 1951;
 
 
+/*RESTRICCIONES PROCEDIMENTALES*/
+/*El numero de la opinion y la fecha son valores automaticos*/
+CREATE OR REPLACE TRIGGER Num_Fecha_Aut
+BEFORE INSERT (numero,fecha) ON opinion
+FOR EACH ROW
+DECLARE
+x INTEGER;
+y INTEGER;
+BEGIN
+IF :New.numero IS Null AND :New.fecha IS NULL
+THEN :New.numero := 1 AND :New.fecha := SYSDATE;
+ELSE
+SELECT MAX(numero) INTO y FROM opinion;
+:New.numero := y+1;
+:New.fecha := SYSDATE;
+END IF;
+END;
+/*Disparador Num_Fecha_Aut OK*/
+INSERT INTO opinion VALUES (NULL,NULL,'B','muy buen producto',8765254,96521);
+
+/*Disparador Num_Fecha_Aut NoOK*/
+/*No va a aparecer ningun error, puesto que se generan datos automaticos en caso de que no hayan en esos dos atributos*/
+
+/*XDisparador*/
+DROP TRIGGER Num_Fecha_Aut
+
+
+/*No se pueden dar opiniones sobre bienes que han sido retirados.*/
+CREATE OR REPLACE TRIGGER Opinion_retirado
+BEFORE INSERT OR UPDATE ON opinion
+FOR EACH ROW
+DECLARE
+x INTEGER;
+BEGIN
+SELECT retirado INTO x FROM bien
+WHERE :New.codigo_bien = codigo;
+IF x = 1
+THEN RAISE_APPLICATION_ERROR(-10001,'No se pueden dar opiniones sobre bienes que han sido retirados.');
+END IF;
+END;
+/*Disparador Opinion_retirado OK*/
+INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',3658749,12345);
+INSERT INTO bien VALUES(12345,'Atun','P','Kilogramos',12000,0,12345);
+
+/*Disparador Opinion_retirado NoOK*/
+INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',3658749,67890);
+INSERT INTO bien VALUES(67890,'Arroz','P','Kilogramos',12000,1,12345);
+
+/*XDisparador*/
+DROP TRIGGER Opinion_retirado;
+
+
+
+/*Las personas que dan la opinión deben pertenecer a una familia que ha aceptado recibir ese bien en una asignación de hace menos de tres meses.*/
+       
+    CREATE OR REPLACE TRIGGER asignacion_bien_tres_meses
+    BEFORE INSERT OR UPDATE ON opinion
+    FOR EACH ROW
+    DECLARE
+    x NUMBER;
+    y NUMBER;
+    z INTEGER;
+    BEGIN
+        SELECT
+            asignacion.numerofamilia INTO x
+        FROM persona 
+        INNER JOIN asignacion 
+        ON persona.numero = asignacion.numerofamilia
+        WHERE :New.codigo = persona.codigo;
+       
+        SELECT
+            MONTHS_BETWEEN(SYSDATE, fecha) INTO y
+        FROM asignacion
+        WHERE x = numerofamilia;
+       
+        SELECT
+            aceptado INTO z
+        FROM asignacion
+        WHERE x = numerofamilia;
+       
+        IF y>3 AND z = 1
+            THEN RAISE_APPLICATION_ERROR(-10002,'Las personas que dan la opinión deben pertenecer a una familia que ha aceptado recibir ese bien en una asignación de hace menos de tres meses.');
+        END IF;
+       
+    END;
+	
+	/*Disparador asignacion_bien_tres_meses OK*/
+	INSERT INTO asignacion VALUES(165486987,TO_DATE('2020/08/09', 'yyyy/mm/dd'),1,12345);
+	INSERT INTO persona VALUES(1698547,'Diego Gonzalez','M','M',TO_DATE('2000/07/28', 'yyyy/mm/dd'),12345);
+
+	/*Disparador asignacion_bien_tres_meses NoOK*/
+	INSERT INTO asignacion VALUES(951648752,TO_DATE('2020/02/09', 'yyyy/mm/dd'),1,12345);
+	INSERT INTO persona VALUES(1698547,'Juana Cortez','M','L',TO_DATE('2000/07/21', 'yyyy/mm/dd'),12345);
+
+	/*XDisparador*/
+	DROP TRIGGER asignacion_bien_tres_meses;
+	
+   
+/* Si la opinión es M: alo, la justificación debe contener la palabra MALO y tener una longitud mayor a 10. */
+   
+    CREATE OR REPLACE TRIGGER justificacion_pesima
+    BEFORE INSERT OR UPDATE ON opinion
+    FOR EACH ROW
+    BEGIN
+    IF :New.opinion = 'M' AND (LENGTH(:New.justificacion)<= 10 OR UPPER(:New.justificacion) NOT LIKE('%MALO%'))
+        THEN RAISE_APPLICATION_ERROR(-10003,'Si la opinión es M: alo, la justificación debe contener la palabra MALO y tener una longitud mayor a 10');
+    END IF;
+    END;
+	
+	/*Disparador justificacion_pesima OK*/
+	INSERT INTO opinion VALUES(12345,TO_DATE('2020/08/09', 'yyyy/mm/dd'),'M','El producto esta MALO',9658745,12398);
+
+	/*Disparador justificacion_pesima NoOK*/
+	INSERT INTO asignacion VALUES(96587,TO_DATE('2020/02/09', 'yyyy/mm/dd'),'M','El producto esta en buen estado',9865745,12345);
+
+	/*XDisparador*/
+	DROP TRIGGER justificacion_pesima;
+
+   
+   /*Las opiniones grupales solo las puede dar el representante familiar*/
+   
+   CREATE OR REPLACE TRIGGER opiniones_familia BEFORE
+    INSERT OR UPDATE ON opiniongrupal
+    FOR EACH ROW
+DECLARE
+    x NUMBER;
+BEGIN
+    SELECT
+        COUNT(familia.codigo)
+    INTO x
+    FROM
+        familia
+        JOIN opinion ON familia.codigo = opinion.codigo
+    WHERE
+        :new.numero = opinion.numero;
+
+    IF x = 0 THEN
+        raise_application_error(-10004, 'Las opiniones grupales solo las puede dar el representante familiar');
+    END IF;
+END;
+
+	/*Disparador opiniones_familia OK*/
+	INSERT INTO familia VALUES(16854,1234567,'Atun',9685741);
+	INSERT INTO persona VALUES(1234567,'Diego','M','M',TO_DATE('2000/02/09', 'yyyy/mm/dd'),16854);
+	INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',1234567,12345);
+	INSERT INTO opiniongrupal VALUES('Nos parece bueno el codigo',5,16548,TO_DATE('2020/02/09', 'yyyy/mm/dd'),'B','El producto esta bueno',1234567,96854);
+
+	/*Disparador opiniones_familia NoOK*/
+	INSERT INTO familia VALUES(86524,9685245,'Atun',9586341);
+	INSERT INTO persona VALUES(95212,'Diego','M','M',TO_DATE('2000/02/09', 'yyyy/mm/dd'),8632);
+	INSERT INTO opinion VALUES(952,NULL,'B','El producto esta bueno',95212,96);
+	INSERT INTO opiniongrupal VALUES('Nos parece bueno el codigo',2,952,TO_DATE('2020/02/09', 'yyyy/mm/dd'),'B','El producto esta bueno',1234567,96854);
+
+	/*XDisparador*/
+	DROP TRIGGER opiniones_familia;
+	
+	
+
+/*Si no se dan las estrellas en una opinión grupal y existen evaluaciones de la familia para ese bien,
+ las estrellas se calculan promediando los valores asociados a las opiniones (E 5, B 4, R 3, M 2)*/
+
+
+CREATE OR REPLACE TRIGGER Promedio_estrellas BEFORE
+    INSERT OR UPDATE ON opiniongrupal
+    FOR EACH ROW
+DECLARE
+    x CHAR;
+BEGIN SELECT
+          opinion.opinion
+      INTO x
+      FROM
+          opinion
+      WHERE
+          :new.numero = opinion.numero;
+IF x = 'E' THEN
+    :new.estrellas := 5;
+ELSIF x = 'B' THEN
+    :new.estrellas := 4;
+ELSIF x = 'R' THEN
+    :new.estrellas := 3;
+ELSE
+    :new.estrellas := 2;
+END IF;
+
+end;
+/*Disparador Promedio_estrellas OK*/
+	INSERT INTO persona VALUES(1234567,'Diego','M','M',TO_DATE('2000/02/09', 'yyyy/mm/dd'),16854);
+	INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',1234567,12345);
+	INSERT INTO opiniongrupal VALUES('Nos parece bueno el codigo',4,16548,TO_DATE('2020/02/09', 'yyyy/mm/dd'),'B','El producto esta bueno',1234567,12345);
+
+	/*Disparador Promedio_estrellas NoOK*/
+	INSERT INTO persona VALUES(1234567,'Diego','M','M',TO_DATE('2000/02/09', 'yyyy/mm/dd'),16854);
+	INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',1234567,12345);
+	INSERT INTO opiniongrupal VALUES('Nos parece bueno el codigo',2,16548,TO_DATE('2020/02/09', 'yyyy/mm/dd'),'B','El producto esta bueno',1234567,12345);
+
+	/*XDisparador*/
+	DROP TRIGGER Promedio_estrellas;
+
+
+
+/*El único dato a modificar es la justificación y el detalle. 
+	El detalle sólo se puede modificar si no se ingreso al momento de adición.*/
+	
+CREATE OR REPLACE TRIGGER detalle_razon_modificar BEFORE
+    UPDATE ON opiniongrupal
+    FOR EACH ROW
+BEGIN
+    IF :new.numero != :old.numero OR :new.estrellas != :old.estrellas THEN
+        raise_application_error(-10005, 'El unico dato valido para modificar es razon');
+    END IF;
+
+    IF :old.razon IS NOT NULL THEN
+        raise_application_error(-10006, 'El detalle sólo se puede modificar si no se ingreso al momento de adición.');
+    END IF;
+
+END;
+	/*Disparador detalle_razon_modificar OK*/
+
+	INSERT INTO opiniongrupal VALUES(NULL,2,16548,TO_DATE('2020/02/09', 'yyyy/mm/dd'),'B','El producto esta bueno',1234567,12345);
+	UPDATE opiniongrupal SET razon = 'Me parece bueno el producto' AND justificacion = 'Lo probamos y esta rico'
+	WHERE numero = 16548;
+	
+	/*Disparador detalle_razon_modificar NoOK*/
+	INSERT INTO opiniongrupal VALUES('No es tan bueno el producto',2,16548,TO_DATE('2020/02/09', 'yyyy/mm/dd'),'B','El producto esta bueno',1234567,12345);
+	UPDATE opiniongrupal SET razon = 'Me parece bueno el producto' AND justificacion = 'Lo probe y no esta feo'
+	WHERE numero = 16548;
+	
+	/*XDisparador*/
+	DROP TRIGGER detalle_razon_modificar;
+	
+	
+	
+/*El unico dato valido para modificar es justificacion*/
+CREATE OR REPLACE TRIGGER detalle_justificacion BEFORE
+    UPDATE ON opinion
+    FOR EACH ROW
+BEGIN
+    IF :new.numero != :old.numero OR :new.fecha != :old.fecha OR :new.opinion != :old.opinion OR :new.codigo != :old.codigo OR :new
+    .codigo_bien != :old.codigo_bien THEN
+        raise_application_error(-10007, 'El unico dato valido para modificar es justificacion');
+    END IF;
+END;
+/*Disparador detalle_justificacion OK*/
+
+	INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',1234567,12345);
+	UPDATE opinion SET justificacion = 'Lo probamos y esta rico'
+	WHERE numero = 16548;
+	
+	/*Disparador detalle_justificacion NoOK*/
+	INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',1234567,12345);
+	UPDATE opiniongrupal SET codigo = 8564987 AND justificacion = 'Lo probe y no esta feo'
+	WHERE numero = 16548;
+	
+	/*XDisparador*/
+	DROP TRIGGER detalle_justificacion;
+	
+
+
+/* Sólo es posible eliminar la opinión si es la última registrada. */
+
+CREATE OR REPLACE TRIGGER eliminar_opinion BEFORE
+    DELETE ON opinion
+    FOR EACH ROW
+DECLARE
+    x INTEGER;
+BEGIN
+    SELECT
+        MAX(numero)
+    INTO x
+    FROM
+        opinion;
+
+    IF :old.numero != x THEN
+        raise_application_error(-10008, 'Sólo es posible eliminar la opinión si es la última registrada.');
+    END IF;
+
+END;
+
+
+
+ me quede aqui xd
+/*Disparador detalle_justificacion OK*/
+
+	INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',1234567,12345);
+	UPDATE opinion SET justificacion = 'Lo probamos y esta rico'
+	WHERE numero = 16548;
+	
+	/*Disparador detalle_justificacion NoOK*/
+	INSERT INTO opinion VALUES(16548,TO_DATE('2020/09/23', 'yyyy/mm/dd'),'E','Muy bueno el producto',1234567,12345);
+	UPDATE opiniongrupal SET codigo = 8564987 AND justificacion = 'Lo probe y no esta feo'
+	WHERE numero = 16548;
+	
+	/*XDisparador*/
+	DROP TRIGGER detalle_justificacion;
+	
+
+
+/*El número, la fecha y el estado se generan automáticamente. */
+
+CREATE OR REPLACE TRIGGER numero_fecha_asig BEFORE
+    INSERT OR UPDATE ON asignacion
+    FOR EACH ROW
+DECLARE
+    x INTEGER;
+BEGIN
+    SELECT
+        MAX(numero)
+    INTO x
+    FROM
+        asignacion;
+
+    IF x IS NULL THEN
+        :new.numero := 1;
+    ELSE
+        :new.numero := x + 1;
+    END IF;
+
+    :new.fecha := sysdate;
+    :new.aceptado := 0;
+END;
+
+
+/*El numero de las personas del alojamiento debe ser menor o igual al numero de las personas de la familia*/
+
+CREATE OR REPLACE TRIGGER personas_alojamiento BEFORE
+    INSERT OR UPDATE ON alojamiento
+    FOR EACH ROW
+DECLARE
+    x INTEGER;
+BEGIN
+    SELECT
+        COUNT(persona.codigo)
+    INTO x
+    FROM
+        detalle
+        JOIN asignacion ON detalle.numero = asignacion.numero
+        JOIN familia ON asignacion.numerofamilia = familia.numero
+        JOIN persona ON familia.codigo = persona.codigo
+    WHERE
+        :new.orden = detalle.orden;
+
+    IF x > :new.personas THEN
+        raise_application_error(-20010, 'El numero de las personas del alojamiento debe ser menor o igual al numero de las personas de la familia'
+        );
+    END IF;
+
+END;
+
+
+/* La talla del vestuario asignado debe corresponder a la talla de uno de los miembros de la familia*/
+
+CREATE OR REPLACE TRIGGER talla_vestuario BEFORE
+    INSERT OR UPDATE ON vestuario
+    FOR EACH ROW
+DECLARE
+    x INTEGER(2);
+BEGIN
+    SELECT
+        COUNT(p.talla)
+    INTO x
+    FROM
+        detalle      d
+        INNER JOIN asignacion   a ON d.numero = a.numero
+        INNER JOIN familia      f ON f.numero = a.numerofamilia
+        INNER JOIN persona      p ON p.numero = f.numero
+    WHERE
+        :new.orden = d.orden
+        AND :new.talla = p.talla;
+
+    IF x = 0 THEN
+        raise_application_error(-20009, 'La talla del vestuario asignado debe corresponder a la talla de uno de los miembros de la
+            familia '
+        );
+    END IF;
+END;
+
+
+/*La fecha de vencimiento de los alimentos perecederos deber ser minimo un mes despues de la fecha de asignacion*/
+CREATE OR REPLACE TRIGGER fecha_vencimiento BEFORE
+    INSERT OR UPDATE ON perecedero
+    FOR EACH ROW
+DECLARE
+    x DATE;
+BEGIN
+    SELECT
+        a.fecha
+    INTO x
+    FROM
+        detalle       d
+        INNER JOIN asignacion   a ON a.numero = d.numero
+    WHERE
+        :new.orden = d.orden;
+
+    IF months_between(x, :new.vencimiento) < 1 THEN
+        raise_application_error(-20009, 'La fecha fin de el alojamiento debe ser mayor a la fecha inicio.*/La fecha de vencimiento de los alimentos perecederos debe ser mínino un mes después de la
+            fecha de asignación'
+        );
+    END IF;
+
+END;
+
+
+
+
+CREATE OR REPLACE TRIGGER UP_Aceptacion
+BEFORE DELETE ON Asignacion
+FOR EACH ROW
+BEGIN
+    IF Aceptado = 1 THEN
+        RAISE_APPLICATION_ERROR(-23522, 'Solo pueden eliminar asignaciones que no esten aceptadas');
+    END IF;
+END;
+/
+CREATE OR REPLACE TRIGGER UP_Eliminacion_Alojamiento
+BEFORE DELETE ON Alojamiento
+FOR EACH ROW
+BEGIN
+    IF SYSDATE < :old.fin OR :old.fin is NULL THEN
+        RAISE_APPLICATION_ERROR(-14522, 'Solamente se puede eliminar los alojaminetos despues de su fecha de fin.');
+    END IF;
+END;
+
+
+
+
+
+/*Todos los bienes al entrar se les coloca por defecto retirado en falso
+
+Un bien no puede reemplazarse a si mismo*/
+CREATE OR REPLACE TRIGGER UP_Bien_entrada
+BEFORE INSERT ON bien
+FOR EACH ROW
+BEGIN
+    :new.retirado := 0;
+END;
+/
+CREATE OR REPLACE TRIGGER UP_BiReemplaza_entrada
+BEFORE INSERT OR UPDATE ON reemplaza
+FOR EACH ROW
+BEGIN
+    IF :new.Bien = :new.bien_reemplazado THEN
+        RAISE_APPLICATION_ERROR(-54821, 'Un bien no puede reemplazarse a si mismo')
+    END IF;
+END;
+
+/No se pueden modificar ni el nombre, ni l codigo ni el tipo ni la medida de bien/
+CREATE OR REPLACE TRIGGER UP_Bien_Actu
+BEFORE UPDATE ON bien
+FOR EACH ROW
+BEGIN
+    IF :new.codigo != :old.codigo OR :new.nombre != :old.nombre OR :new.tipo != :old.tipo OR :new.medida != :old.medida THEN
+        RAISE_APPLICATION_ERROR(-65421, 'No se pueden modificar ni el nombre, ni l codigo ni el tipo ni la medida de bien')
+    END IF;
+END;
+
+/Solo se pueden eliminar los bienes retirados/
+CREATE OR REPLACE TRIGGER UP_Eliminacion_Bien
+BEFORE DELETE ON bien
+FOR EACH ROW
+BEGIN
+    IF retirado = 0 THEN
+        RAISE_APPLICATION_ERROR(-54821, 'Solo se pueden eliminar los bienes retirados')
+    END IF;
+END;
+
 /*Eliminar datos de tablas*/
 DELETE FROM adulto;
 
