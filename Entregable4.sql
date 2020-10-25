@@ -503,6 +503,14 @@ BEGIN
 	END IF;
 END;
 /
+/*DisparadorOk*/
+INSERT INTO bodega VALUES('Bodega Chichimene', 'Villavicencio', 'Meta');
+INSERT INTO empleado VALUES('Diego' 'Fernandez', 'E000949', 'INGENIERO PETROLERO POZO', 'diego.fernandez@petrolinventories.com.co', 'Ext. 956481', 'Pozos petroleros', '1007196548');
+INSERT INTO pedido_pieza VALUES(9568471, 'E000949', 'Pozos petroleros', 25, 'Bodega Chichimene');
+/*DisparadorNoOK*/
+INSERT INTO bodega VALUES('Bodega Chichimene', 'Villavicencio', 'Meta');
+INSERT INTO empleado VALUES('Luis' 'Parra', 'E000675', 'INGENIERO PETROLERO POZO', 'luis.parra@petrolinventories.com.co', 'Ext. 856412', 'Pozos petroleros', '9562844456');
+INSERT INTO pedido_pieza VALUES(9658231, 'E000675', 'Pozos petroleros', 100, 'Bodega Chichimene');
 /*XDisparador*/
 DROP TRIGGER Max_tubos;
 
@@ -523,6 +531,8 @@ BEGIN
 	END IF;
 END;
 /
+/*DisparadorOk*/
+/*DisparadorNoOK*/
 /*XDisparador*/
 DROP TRIGGER Id_pedido;
 
@@ -538,6 +548,8 @@ BEGIN
 	END IF;
 END;
 /
+/*DisparadorOk*/
+/*DisparadorNoOK*/
 /*XDisparador*/
 DROP TRIGGER ACT_Dimensiones;
 
@@ -545,20 +557,22 @@ DROP TRIGGER ACT_Dimensiones;
 
 /*No se pueden actualizar los pedidos que constan de Herramientas*/
 CREATE OR REPLACE TRIGGER Pedidos_Herramientas
-BEFORE UPDATE ON PedidoPiezas
+BEFORE UPDATE ON pedido_pieza
 FOR EACH ROW
 DECLARE tipoPedido VARCHAR;
 BEGIN
 	SELECT PiezasExtraccionPetrolera.tipo INTO tipoPedido
-	FROM PedidoPiezas
-	JOIN Permisos ON Permisos.NumeroPermiso = PedidoPiezas.NumeroPermiso
-	JOIN PiezasExtraccionPetrolera ON Permisos.NumeroSeriePieza = PiezasExtraccionPetrolera.NumeroSerie
-	WHERE :NEW.NumeroPermiso = Permisos.NumeroPermiso
+	FROM pedido_pieza
+	JOIN permiso ON permiso.numero_permiso = pedido_pieza.NumeroPermiso                                  /*ARREGLAR ESTE TRIGGER*/
+	JOIN PiezasExtraccionPetrolera ON permiso.NumeroSeriePieza = PiezasExtraccionPetrolera.NumeroSerie
+	WHERE :NEW.NumeroPermiso = permiso.NumeroPermiso
 	IF tipoPedido = 'Herramienta' THEN
 		RAISE_APPLICATION_ERROR(-500,'No se pueden actualizar los pedidos que constan de Herramientas')
 	END IF;
 END;
 /
+/*DisparadorOk*/
+/*DisparadorNoOK*/
 /*XDisparador*/
 DROP TRIGGER Pedidos_Herramientas;
 
@@ -566,7 +580,7 @@ DROP TRIGGER Pedidos_Herramientas;
 
 /*solo se pueden actualizar pedidos si no estan aceptados*/
 CREATE OR REPLACE TRIGGER Actualizacion_pedidos
-BEFORE UPDATE ON pedidos
+BEFORE UPDATE ON pedido_pieza
 FOR EACH ROW
 BEGIN
 	IF :OLD.estado = 'Aceptados' THEN
@@ -574,6 +588,19 @@ BEGIN
 	END IF;
 END;
 /
+/*DisparadorOk*/
+INSERT INTO empleado VALUES('Amparo' 'Cardenas', 'E000100', 'INGENIERO PETROLERO POZO', 'amparo.cardenas@petrolinventories.com.co', 'Ext. 552200', 'Pozos petroleros', '9921004877');
+INSERT INTO bodega VALUES('Bodega Central', 'Cajicá', 'Cundinamarca');
+INSERT INTO pieza_extraccion_petrolera VALUES(525298, 'Engranajes', '3mm x 10mm x 5mm');
+INSERT INTO permiso VALUES(1295632,'E000100', 525298, 'Se necesita esta pieza para terminar la construccion de pozo numero 60', 'Aceptado', 9963251);
+INSERT INTO pedido_pieza VALUES(9963251, 'E000100', 'Pozos petroleros', 21, 'No Aceptado', 'Bodega Central');
+UPDATE pedido_pieza SET estado = 'Aceptado' AND cantidad_piezas = 20 WHERE pedido_pieza.numero_pedido = 9963251
+/*DisparadorNoOK*/
+INSERT INTO empleado VALUES('Andres' 'Lara', 'E000885', 'INGENIERO PETROLERO POZO', 'andres.lara@petrolinventories.com.co', 'Ext. 882214', 'Pozos petroleros', '1000653222');
+INSERT INTO pieza_extraccion_petrolera VALUES(859632, 'Engranajes', '23mm x 104mm x 52mm');
+INSERT INTO permiso VALUES(9922001,'E000885', 859632, 'Se necesita esta pieza para terminar la construccion de pozo numero 15', 'Aceptado', 9956214);
+INSERT INTO pedido_pieza VALUES(9956214, 'E000885', 'Pozos petroleros', 14, 'Aceptado', 'Bodega Central');
+UPDATE pedido_pieza SET cantidad_piezas = 20 AND bodega_reclamo = 'Bodega Chichimene' WHERE pedido_pieza.numero_pedido = 9956214
 /*XDisparador*/
 DROP TRIGGER Actualizacion_pedidos;
 
@@ -581,14 +608,27 @@ DROP TRIGGER Actualizacion_pedidos;
 
 /*No se pueden eliminar pedidos Aceptados*/
 CREATE OR REPLACE TRIGGER Eliminacion_Pedidos
-BEFORE DELETE ON pedidos
+BEFORE DELETE ON pedido_pieza
 FOR EACH ROW
 BEGIN
-	IF :OLD.estado = 'Aceptados' THEN
+	IF :OLD.estado = 'Aceptado' THEN
 		RAISE_APPLICATION_ERROR(654,'No se pueden eliminar pedidos Aceptados')
 	END IF;
 END;
 /
+/*DisparadorOk*/
+INSERT INTO empleado VALUES('Jose' 'Gualteros', 'E000999', 'INGENIERO PETROLERO POZO', 'jose.gualteros@petrolinventories.com.co', 'Ext. 859261', 'Pozos petroleros', '9563001587');
+INSERT INTO bodega VALUES('Bodega Central', 'Cajicá', 'Cundinamarca');
+INSERT INTO pieza_extraccion_petrolera VALUES(116695, 'Tubos', '3mm x 10mm x 5mm');
+INSERT INTO permiso VALUES(1295632,'E000999', 116695, 'Se necesita esta pieza para terminar la construccion de pozo numero 15', 'Aceptado', 9956214);
+INSERT INTO pedido_pieza VALUES(9956214, 'E000999', 'Pozos petroleros', 49, 'No Aceptado', 'Bodega Central');
+DELETE FROM pedido_pieza WHERE pedido_pieza.id_autor = 'E000999';
+/*DisparadorNoOK*/
+INSERT INTO empleado VALUES('Clara' 'Gualteros', 'E000852', 'INGENIERO PETROLERO POZO', 'clara.gualteros@petrolinventories.com.co', 'Ext. 111159', 'Pozos petroleros', '9992651847');
+INSERT INTO pieza_extraccion_petrolera VALUES(662351, 'Tubos', '4mm x 67mm x 123mm');
+INSERT INTO permiso VALUES(9632511,'E000852', 662351, 'Se necesita esta pieza para terminar la construccion de pozo numero 54', 'Aceptado', 8596333);
+INSERT INTO pedido_pieza VALUES(8596333, 'E000852', 'Pozos petroleros', 49, 'Aceptado', 'Bodega Central');
+DELETE FROM pedido_pieza WHERE pedido_pieza.id_autor = 'E000852';
 /*XDisparador*/
 DROP TRIGGER Eliminacion_Pedidos;
 
@@ -599,12 +639,12 @@ DROP TRIGGER Eliminacion_Pedidos;
 
 /*El id de los empleados se genera automaticamente y es incremental*/
 CREATE OR REPLACE TRIGGER Id_Empleados
-BEFORE INSERT ON Empleados
+BEFORE INSERT ON empleado
 FOR EACH ROW
 DECLARE x NUMBER;	
 BEGIN
 	SELECT MAX(ID) INTO x
-	FROM Empleados
+	FROM empleado
 	IF x IS NULL THEN
 		:NEW.ID := 1
 	ELSE
@@ -612,6 +652,8 @@ BEGIN
 	END IF;
 END;
 /
+/*DisparadorOk*/
+/*DisparadorNoOK*/
 /*XDisparador*/
 DROP TRIGGER Id_Empleados;
 
@@ -619,7 +661,7 @@ DROP TRIGGER Id_Empleados;
 
 /*Si los empleados no tienen un correo se le genera uno*/
 CREATE OR REPLACE TRIGGER Generacion_Correo
-AFTER INSERT ON Empleados
+AFTER INSERT ON empleado
 FOR EACH ROW
 DECLARE 
 nombreC VARCHAR;
@@ -634,6 +676,8 @@ BEGIN
 	END IF;
 END;
 /
+/*DisparadorOk*/
+/*DisparadorNoOK*/                
 /*XDisparador*/
 DROP TRIGGER Generacion_Correo;
 
@@ -641,7 +685,7 @@ DROP TRIGGER Generacion_Correo;
 
 /*Solo se pueden actualizar El departamento de trabajo, el cargo y el numero de telefono*/
 CREATE OR REPLACE TRIGGER TriggerActualizacion
-BEFORE UPDATE ON Empleados
+BEFORE UPDATE ON empleado
 FOR EACH ROW
 BEGIN
 	IF :NEW.nombre != :OLD.nombre OR :NEW.apellido != :OLD.apellido OR :NEW.ID != :OLD.ID OR :NEW.correo != :OLD.correo OR :NEW.cedula != :OLD.cedula THEN
@@ -649,8 +693,18 @@ BEGIN
 	END IF;
 END;
 /
+/*DisparadorOk*/
+INSERT INTO empleado VALUES('Ana' 'Bernal', 'E000956', 'INGENIERO PETROLERO POZO', 'ana.bernal@petrolinventories.com.co', 'Ext. 859261', 'Pozos petroleros', '9563001587');
+UPDATE empleado SET departamento_trabajo = 'Corporativo' WHERE empleado.id = 'E000956';
+UPDATE empleado SET cargo = 'TECNICO ERA 1' WHERE empleado.id = 'E000956';
+UPDATE empleado SET numero_telefonico = 'Ext. 888562' WHERE empleado.id = 'E000956';
+/*DisparadorNoOK*/
+INSERT INTO empleado VALUES('Juan' 'Bernal', 'E000123', 'TECNICO ERA 1', 'juan.bernal@petrolinventories.com.co', 'Ext. 165922', 'Pozos petroleros', '9992658741');
+UPDATE empleado SET id = 'E100888' WHERE empleado.id = 'E000123';
 /*XDisparador*/
 DROP TRIGGER TriggerActualizacion
+
+
 
 /*No se puede actualizar el departamento de experiencia*/
 CREATE OR REPLACE TRIGGER TriggerExperto
@@ -662,8 +716,18 @@ BEGIN
 	END IF;
 END;
 /
+/*DisparadorOk*/
+INSERT INTO empleado VALUES('Diego' 'Chicuazque', 'E100010', 'TECNICO ERA 1', 'diego.chicuazuque@petrolinventories.com.co', 'Ext. 856321', 'Pozos petroleros', '9562315487');
+UPDATE empleado SET id = 'E100918' WHERE empleado.id = 'E100010';
+INSERT INTO experto VALUES('E100010','Pozos petroleros');
+UPDATE experto SET id = 'E100918' WHERE experto.id = 'E100010';
+/*DisparadorNoOK*/
+INSERT INTO empleado VALUES('Gabriel' 'Silva', 'E100662', 'TECNICO ERA 2', 'gabriel.silva@petrolinventories.com.co', 'Ext. 859632', 'Pozos petroleros', '9955228814');
+INSERT INTO experto VALUES('E100662','Pozos petroleros');
+UPDATE experto SET id_empleado = 'Corporativo' WHERE experto.id = 'E100662';
 /*XDisparador*/
 DROP TRIGGER TriggerExperto;
+
 
 
 
