@@ -489,6 +489,183 @@ INSERT INTO pieza_extraccion_petrolera VALUES (965874, 'Pozos pruebas', '5mm x 8
 
 
 
+/*=========================================PROCEDIMENTALES=====================================*/
+/*Mantener Pieza*/
+
+/*El numero maximo de piezas que se pueden solicitar es 50*/
+CREATE OR REPLACE TRIGGER Max_tubos
+BEFORE INSERT ON PedidoPiezas
+FOR EACH ROW
+BEGIN
+	IF :NEW.CantidadPiezas > 50 THEN
+		RAISE_APPLICATION_ERROR(-15200,'El numero maximo de piezas que se pueden solicitar es 50')
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER Max_tubos;
+
+
+
+/*El numero de pedido se genera automaticamente y empieza en 1*/
+CREATE OR REPLACE TRIGGER Id_Pedido
+BEFORE INSERT ON PedidoPiezas
+FOR EACH ROW
+DECLARE x NUMBER;	
+BEGIN
+	SELECT MAX(numeropedido) INTO x
+	FROM PedidoPiezas
+	IF x IS NULL THEN
+		:NEW.numeropedido := 1
+	ELSE
+		:NEW.numeropedido := x+1
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER Id_pedido;
+
+
+
+/*Las dimensiones de las piezas no se pueden actualizar*/
+CREATE OR REPLACE TRIGGER ACT_Dimensiones
+BEFORE UPDATE ON PiezasExtraccionPetrolera
+FOR EACH ROW
+BEGIN
+	IF :NEW.dimensiones != :OLD.dimensiones THEN
+		RAISE_APPLICATION_ERROR(-200,'Las dimensiones de las piezas no se pueden actualizar')
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER ACT_Dimensiones;
+
+
+
+/*No se pueden actualizar los pedidos que constan de Herramientas*/
+CREATE OR REPLACE TRIGGER Pedidos_Herramientas
+BEFORE UPDATE ON PedidoPiezas
+FOR EACH ROW
+DECLARE tipoPedido VARCHAR;
+BEGIN
+	SELECT PiezasExtraccionPetrolera.tipo INTO tipoPedido
+	FROM PedidoPiezas
+	JOIN Permisos ON Permisos.NumeroPermiso = PedidoPiezas.NumeroPermiso
+	JOIN PiezasExtraccionPetrolera ON Permisos.NumeroSeriePieza = PiezasExtraccionPetrolera.NumeroSerie
+	WHERE :NEW.NumeroPermiso = Permisos.NumeroPermiso
+	IF tipoPedido = 'Herramienta' THEN
+		RAISE_APPLICATION_ERROR(-500,'No se pueden actualizar los pedidos que constan de Herramientas')
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER Pedidos_Herramientas;
+
+
+
+/*solo se pueden actualizar pedidos si no estan aceptados*/
+CREATE OR REPLACE TRIGGER Actualizacion_pedidos
+BEFORE UPDATE ON pedidos
+FOR EACH ROW
+BEGIN
+	IF :OLD.estado = 'Aceptados' THEN
+		RAISE_APPLICATION_ERROR(654,'Solo se pueden actualizar pedidos si no estan aceptados')
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER Actualizacion_pedidos;
+
+
+
+/*No se pueden eliminar pedidos Aceptados*/
+CREATE OR REPLACE TRIGGER Eliminacion_Pedidos
+BEFORE DELETE ON pedidos
+FOR EACH ROW
+BEGIN
+	IF :OLD.estado = 'Aceptados' THEN
+		RAISE_APPLICATION_ERROR(654,'No se pueden eliminar pedidos Aceptados')
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER Eliminacion_Pedidos;
+
+
+
+/*================================================================================================================================*/
+/*Mantener Personal*/
+
+/*El id de los empleados se genera automaticamente y es incremental*/
+CREATE OR REPLACE TRIGGER Id_Empleados
+BEFORE INSERT ON Empleados
+FOR EACH ROW
+DECLARE x NUMBER;	
+BEGIN
+	SELECT MAX(ID) INTO x
+	FROM Empleados
+	IF x IS NULL THEN
+		:NEW.ID := 1
+	ELSE
+		:NEW.ID := x+1
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER Id_Empleados;
+
+
+
+/*Si los empleados no tienen un correo se le genera uno*/
+CREATE OR REPLACE TRIGGER Generacion_Correo
+AFTER INSERT ON Empleados
+FOR EACH ROW
+DECLARE 
+nombreC VARCHAR;
+apellidoC VARCHAR;
+codigo VARCHAR;
+BEGIN
+	nombreC := :NEW.nombre
+	apellidoC := :NEW.apellido
+	codigo := TO_CHAR(:NEW.codigo)
+	IF :NEW.correo is NULL THEN
+		:NEW.correo := nombreC || '.'|| apellidoC || '-' || codigo || '@petrolinventories.com'
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER Generacion_Correo;
+
+
+
+/*Solo se pueden actualizar El departamento de trabajo, el cargo y el numero de telefono*/
+CREATE OR REPLACE TRIGGER TriggerActualizacion
+BEFORE UPDATE ON Empleados
+FOR EACH ROW
+BEGIN
+	IF :NEW.nombre != :OLD.nombre OR :NEW.apellido != :OLD.apellido OR :NEW.ID != :OLD.ID OR :NEW.correo != :OLD.correo OR :NEW.cedula != :OLD.cedula THEN
+		RAISE_APPLICATION_ERROR(-1000,'Solo se pueden actualizar El departamento de trabajo, el cargo y el numero de telefono')
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER TriggerActualizacion
+
+/*No se puede actualizar el departamento de experiencia*/
+CREATE OR REPLACE TRIGGER TriggerExperto
+BEFORE UPDATE ON experto
+FOR EACH ROW
+BEGIN
+	IF :OLD.Departamento_Experiencia != :NEW.Departamento_Experiencia THEN
+		RAISE_APPLICATION_ERROR(-1001,'No se puede actualizar el departamento de experiencia')
+	END IF;
+END;
+/
+/*XDisparador*/
+DROP TRIGGER TriggerExperto;
+
+
+
 /*Eliminar datos*/
 DELETE FROM proveedor;
 
