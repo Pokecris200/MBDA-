@@ -84,7 +84,7 @@ CREATE TABLE pedido_pieza (
     numero_pedido          NUMBER(7) NOT NULL,
     id_autor               VARCHAR(7) NOT NULL,
     departamento_trabajo   VARCHAR(20) NOT NULL,
-    cantidad_piezas        VARCHAR(5) NOT NULL,
+    cantidad_piezas        NUMBER(5) NOT NULL,
     bodega_reclamo         VARCHAR(20) NOT NULL
 );
 
