@@ -499,7 +499,7 @@ BEFORE INSERT ON PedidoPiezas
 FOR EACH ROW
 BEGIN
 	IF :NEW.CantidadPiezas > 50 THEN
-		RAISE_APPLICATION_ERROR(-15200,'El numero maximo de piezas que se pueden solicitar es 50')
+		RAISE_APPLICATION_ERROR(-15200,'El numero maximo de piezas que se pueden solicitar es 50');
 	END IF;
 END;
 /
@@ -525,9 +525,9 @@ BEGIN
 	SELECT MAX(numeropedido) INTO x
 	FROM PedidoPiezas
 	IF x IS NULL THEN
-		:NEW.numeropedido := 1
+		:NEW.numeropedido := 1;
 	ELSE
-		:NEW.numeropedido := x+1
+		:NEW.numeropedido := x+1;
 	END IF;
 END;
 /
@@ -544,7 +544,7 @@ BEFORE UPDATE ON PiezasExtraccionPetrolera
 FOR EACH ROW
 BEGIN
 	IF :NEW.dimensiones != :OLD.dimensiones THEN
-		RAISE_APPLICATION_ERROR(-200,'Las dimensiones de las piezas no se pueden actualizar')
+		RAISE_APPLICATION_ERROR(-200,'Las dimensiones de las piezas no se pueden actualizar');
 	END IF;
 END;
 /
@@ -567,7 +567,7 @@ BEGIN
 	JOIN PiezasExtraccionPetrolera ON permiso.NumeroSeriePieza = PiezasExtraccionPetrolera.NumeroSerie
 	WHERE :NEW.NumeroPermiso = permiso.NumeroPermiso
 	IF tipoPedido = 'Herramienta' THEN
-		RAISE_APPLICATION_ERROR(-500,'No se pueden actualizar los pedidos que constan de Herramientas')
+		RAISE_APPLICATION_ERROR(-500,'No se pueden actualizar los pedidos que constan de Herramientas');
 	END IF;
 END;
 /
@@ -584,7 +584,7 @@ BEFORE UPDATE ON pedido_pieza
 FOR EACH ROW
 BEGIN
 	IF :OLD.estado = 'Aceptados' THEN
-		RAISE_APPLICATION_ERROR(654,'Solo se pueden actualizar pedidos si no estan aceptados')
+		RAISE_APPLICATION_ERROR(654,'Solo se pueden actualizar pedidos si no estan aceptados');
 	END IF;
 END;
 /
@@ -612,7 +612,7 @@ BEFORE DELETE ON pedido_pieza
 FOR EACH ROW
 BEGIN
 	IF :OLD.estado = 'Aceptado' THEN
-		RAISE_APPLICATION_ERROR(654,'No se pueden eliminar pedidos Aceptados')
+		RAISE_APPLICATION_ERROR(654,'No se pueden eliminar pedidos Aceptados');
 	END IF;
 END;
 /
@@ -637,18 +637,22 @@ DROP TRIGGER Eliminacion_Pedidos;
 /*================================================================================================================================*/
 /*Mantener Personal*/
 
-/*El id de los empleados se genera automaticamente y es incremental*/
+/*El id de los empleados se genera automaticamente y es incremental, teniendo en cuenta que los expertos empezan con la serie "E100" y el resto de empleados tienen la serie "E000"*/
 CREATE OR REPLACE TRIGGER Id_Empleados
 BEFORE INSERT ON empleado
 FOR EACH ROW
 DECLARE x NUMBER;	
 BEGIN
-	SELECT MAX(ID) INTO x
+	SELECT MAX(TO_NUMBER(SUBSTR(ID,4))) INTO x
 	FROM empleado
-	IF x IS NULL THEN
-		:NEW.ID := 1
+	IF x IS NULL AND :NEW.cargo LIKE 'Experto%'THEN
+		:NEW.ID := 'E1001';
+	ELSIF x IS NULL THEN
+		:NEW.ID := 'E0001';
+	ELSIF :NEW.cargo LIKE 'Experto%' THEN
+		:NEW.ID := 'E100' || TO_CHAR(x+1);
 	ELSE
-		:NEW.ID := x+1
+		:NEW.ID := 'E000' || TO_CHAR(x+1);
 	END IF;
 END;
 /
@@ -668,11 +672,11 @@ nombreC VARCHAR;
 apellidoC VARCHAR;
 codigo VARCHAR;
 BEGIN
-	nombreC := :NEW.nombre
-	apellidoC := :NEW.apellido
-	codigo := TO_CHAR(:NEW.codigo)
+	nombreC := :NEW.nombre;
+	apellidoC := :NEW.apellido;
+	codigo := TO_CHAR(:NEW.codigo);
 	IF :NEW.correo is NULL THEN
-		:NEW.correo := nombreC || '.'|| apellidoC || '-' || codigo || '@petrolinventories.com'
+		:NEW.correo := nombreC || '.'|| apellidoC || '-' || codigo || '@petrolinventories.com';
 	END IF;
 END;
 /
@@ -689,7 +693,7 @@ BEFORE UPDATE ON empleado
 FOR EACH ROW
 BEGIN
 	IF :NEW.nombre != :OLD.nombre OR :NEW.apellido != :OLD.apellido OR :NEW.ID != :OLD.ID OR :NEW.correo != :OLD.correo OR :NEW.cedula != :OLD.cedula THEN
-		RAISE_APPLICATION_ERROR(-1000,'Solo se pueden actualizar El departamento de trabajo, el cargo y el numero de telefono')
+		RAISE_APPLICATION_ERROR(-1000,'Solo se pueden actualizar El departamento de trabajo, el cargo y el numero de telefono');
 	END IF;
 END;
 /
@@ -712,7 +716,7 @@ BEFORE UPDATE ON experto
 FOR EACH ROW
 BEGIN
 	IF :OLD.Departamento_Experiencia != :NEW.Departamento_Experiencia THEN
-		RAISE_APPLICATION_ERROR(-1001,'No se puede actualizar el departamento de experiencia')
+		RAISE_APPLICATION_ERROR(-1001,'No se puede actualizar el departamento de experiencia');
 	END IF;
 END;
 /
