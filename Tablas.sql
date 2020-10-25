@@ -3,39 +3,39 @@
 CREATE TABLE proveedor (
     codigo     VARCHAR(8) NOT NULL,
     telefono   VARCHAR(10) NOT NULL,
-    correo     VARCHAR(50) NOT NULL
+    correo     VARCHAR(250) NOT NULL
 );
 
 CREATE TABLE persona_juridica (
-    nombre     VARCHAR(20) NOT NULL,
-    apellido   VARCHAR(20) NOT NULL,
+    nombre     VARCHAR(50) NOT NULL,
+    apellido   VARCHAR(50) NOT NULL,
     cedula     VARCHAR(10) NOT NULL,
     nit        VARCHAR(10) NOT NULL,
     codigo     VARCHAR(8) NOT NULL
 );
 
 CREATE TABLE empresa (
-    nombre             VARCHAR(25) NOT NULL,
+    nombre             VARCHAR(100) NOT NULL,
     nit                VARCHAR(10) NOT NULL,
     codigo             VARCHAR(8) NOT NULL,
-    direccion          VARCHAR(50) NOT NULL,
+    direccion          VARCHAR(250) NOT NULL,
     ciudad             VARCHAR(50) NOT NULL,
     direccion_postal   VARCHAR(20)
 );
 
 CREATE TABLE provee (
     codigo_proveedor   VARCHAR(8) NOT NULL,
-    nombre_bodega      VARCHAR(20) NOT NULL
+    nombre_bodega      VARCHAR(100) NOT NULL
     
 );
 CREATE TABLE bodega (
-    nombre_bodega        VARCHAR(20) NOT NULL,
-    municipio            VARCHAR(20) NOT NULL,
-    departamento         VARCHAR(20) NOT NULL
+    nombre_bodega        VARCHAR(100) NOT NULL,
+    municipio            VARCHAR(100) NOT NULL,
+    departamento         VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE inventario (
-    nombre_bodega           VARCHAR(20) NOT NULL,   
+    nombre_bodega           VARCHAR(100) NOT NULL,   
     numero_serie_pieza      NUMBER(6) NOT NULL,
     id_inventarios          VARCHAR(6) NOT NULL,
     disponibilidad          VARCHAR(13) NOT NULL
@@ -47,11 +47,11 @@ CREATE TABLE revisa (
 );
 
 CREATE TABLE empleado (
-    nombre                 VARCHAR(20) NOT NULL,
-    apellido               VARCHAR(20) NOT NULL,
+    nombre                 VARCHAR(100) NOT NULL,
+    apellido               VARCHAR(100) NOT NULL,
     id                     VARCHAR(7) NOT NULL,
-    cargo                  VARCHAR(25) NOT NULL,
-    correo                 VARCHAR(15) NOT NULL,
+    cargo                  VARCHAR(100) NOT NULL,
+    correo                 VARCHAR(250) NOT NULL,
     numero_telefonico      VARCHAR(20) NOT NULL,
     departamento_trabajo   VARCHAR(20) NOT NULL,
     cedula                 VARCHAR(10) NOT NULL
@@ -91,7 +91,7 @@ CREATE TABLE pedido_pieza (
 CREATE TABLE pieza_extraccion_petrolera (
     numero_serie   NUMBER(6) NOT NULL,
     tipo           VARCHAR(15) NOT NULL,
-    dimensiones    VARCHAR(10) NOT NULL
+    dimensiones    VARCHAR(50) NOT NULL
 );
 
 
