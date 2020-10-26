@@ -733,6 +733,99 @@ UPDATE experto SET id_empleado = 'Corporativo' WHERE experto.id = 'E100662';
 DROP TRIGGER TriggerExperto;
 
 
+/*======================================MANTENER INVENTARIO===============================================*/
+
+/*No pueden haber mas de 5 bodegas por departamento*/
+CREATE OR REPLACE TRIGGER Nro_Bodegas
+BEFORE INSERT ON bodega
+FOR EACH ROW
+DECLARE x NUMBER;
+BEGIN
+	SELECT COUNT(*) INTO x
+	FROM bodegas
+	WHERE :NEW.departamento = bodegas.departamento
+	IF x = 5 THEN
+		RAISE_APPLICATION_ERROR(-854,'No pueden haber mas de 5 bodegas por departamento')
+	END IF;
+END;
+
+/*El id del inventario y se genera automaticamente tomando el numero de serie de la pieza y el nombre de la bodega*/
+CREATE OR REPLACE TRIGGER generacion_ID
+BEFORE INSERT ON inventario
+FOR EACH ROW
+DECLARE CodigoBodega VARCHAR;
+BEGIN
+	:NEW.id_inventario := 'I'||TO_CHAR(:NEW.numero_serie_pieza)||:NEW.nombre_bodega
+END;
+
+/*No se puede actualizar la unicacion del departamento*/
+CREATE OR REPLACE TRIGGER Ubicacion_bodega
+BEFORE UPDATE ON bodega
+FOR EACH ROW
+BEGIN
+	IF :NEW.departamento != :OLD.departamento OR :NEW.municipio != :OLD.municipio THEN
+		RAISE_APPLICATION_ERROR(-855,'No se puede actualizar la unicacion del departamento')
+	END IF;
+END;
+
+/*Solo se puede actualizar la disponibilidad de la bodega*/
+CREATE OR REPLACE TRIGGER Disponibilidad_Bodega
+BEFORE UPDATE ON inventario
+FOR EACH ROW
+BEGIN
+	IF (:OLD.numero_serie_pieza != :NEW.numero_serie_pieza) OR (:OLD.nombre_bodega != :NEW.nombre_bodega) OR (:OLD.id_inventarios != :NEW.id_inventarios) THEN
+		RAISE_APPLICATION_ERROR(-856,'Solo se puede actualizar la disponibilidad de la bodega')
+	END IF;
+END;
+
+/*No se puede eliminar un inventario si no hay disponibilad 0*/
+CREATE OR REPLACE TRIGGER Eliminacion_Inventario
+BEFORE DELETE ON inventario
+FOR EACH ROW
+BEGIN
+	IF OLD.disponibilad > 0 THEN
+		RAISE_APPLICATION_ERROR(-754,'No se puede eliminar un inventario si no hay disponibilad 0')
+	END IF;
+END;
+/*======================REGISTRAR PIEZA===========================*/
+
+/*El codigo de los proveedores se genera automaticamente*/
+CREATE OR REPLACE TRIGGER Codigo_Proveedor
+BEFORE INSERT ON proveedor
+FOR EACH ROW
+DECLARE x NUMBER; 
+BEGIN
+	SELECT MAX(TO_NUMBER(SUBSTR(codigo)))INTO x
+	FROM proveedor
+	IF x is NULL THEN
+		:NEW.codigo := 'P1'
+	ELSE
+		:NEW.codigo := 'P'|| TO_CHAR(x+1)
+END;
+
+/*Las empresas no pueden modificar su nit, ni ciudad, ni direccion postal*/
+CREATE OR REPLACE TRIGGER Insert_Empresas
+BEFORE UPDATE ON empresa
+FOR EACH ROW
+BEGIN
+	IF :NEW.nit != :OLD.nit OR :NEW.ciudad != :OLD.ciudad OR :NEW.direccion != :OLD.direccion THEN
+		RAISE_APPLICATION_ERROR(6212,'Las empresas no pueden modificar su nit, ni ciudad, ni direccion postal')
+	END IF;
+END;
+
+/*No se puede eliminar una empresa que provee a una bodega*/
+CREATE OR REPLACE TRIGGER E_P_Bodega
+BEFORE DELETE ON empresa
+FOR EACH ROW
+DECLARE numBodegas
+BEGIN
+	SELECT COUNT(codigo_proveedor) INTO numBodegas
+	FROM provee
+	WHERE :OLD.codigo = Provee.codigo_proveedor
+	IF numBodegas > 0 THEN 
+		RAISE_APPLICATION_ERROR(-25617,'No se puede eliminar una empresa que provee a una bodega')
+	END IF;
+END;
 
 
 /*Eliminar datos*/
